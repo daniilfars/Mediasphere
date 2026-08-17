@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Backend/">
+    <Project Path="Backend/Shared/Shared.csproj" Id="63c1328a-feb9-414e-9f73-5cc32448796b" />
+  </Folder>
+  <Folder Name="/Backend/User/">
+    <Project Path="Backend/User/Application/Application.csproj" Id="8fc483cf-b38c-4f13-85ad-da7eb3534247" />
+    <Project Path="Backend/User/Domain/Domain.csproj" Id="001f9fc6-4cfc-4f41-addb-f1585984e5aa" />
+    <Project Path="Backend/User/Infrastructure/Infrastructure.csproj" Id="14b31a64-2449-4033-8a56-b7a7b768a487" />
+    <Project Path="Backend/User/WebAPI/WebAPI.csproj" Id="5b4ef989-b445-4985-a402-12528b50a533" />
+  </Folder>
+  <Folder Name="/Элементы решения/">
+    <File Path=".env" />
+    <File Path="docker-compose.yml" />
+  </Folder>
+</Solution>
