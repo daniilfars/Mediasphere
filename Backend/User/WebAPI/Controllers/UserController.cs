@@ -1,4 +1,5 @@
 ﻿using Application.Commands.UserCreated;
+using Application.Queries.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,7 @@ public class UserController : ControllerBase
     // POST: api/user
     [Authorize]
     [HttpPost()]
-    public async Task<ActionResult<UserCreatedResponse>> Create()
+    public async Task<ActionResult<UserCreatedResponse>> UserCreated()
     {
         var result = await _mediator.Send(new UserCreatedCommand(
             Guid.Parse(User.FindFirst("sub")!.Value),
@@ -29,6 +30,18 @@ public class UserController : ControllerBase
 
         if (result.IsFailure)
             return BadRequest(result.Error);
+
+        return CreatedAtAction(nameof(GetUserById), new { userId = result.Value!.Id }, result.Value);
+    }
+
+    // GET: api/user
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<GetUserByIdResponse>> GetUserById(Guid userId)
+    {
+        var result = await _mediator.Send(new GetUserByIdQuery(userId));
+
+        if (result.IsFailure)
+            return NotFound(result.Error);
 
         return Ok(result.Value);
     }

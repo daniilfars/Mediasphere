@@ -1,6 +1,7 @@
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,31 +10,18 @@ builder.Services.AddUserInfrastructure(builder.Configuration);
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(Application.Commands.UserCreated.UserCreatedHandler).Assembly));
 
-builder.Services.AddAuthentication()
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "http://keycloak_server:8080/realms/mediasphere";
-        options.Audience = "mediasphere-api";
-        options.RequireHttpsMetadata = false;
-        options.MapInboundClaims = false;
-
-        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-        {
-            ValidIssuer = "http://localhost:8080/realms/mediasphere",
-            ValidateIssuer = true
-        };
-    });
-builder.Services.AddAuthorizationBuilder();
+builder.Services.AddAppSecurity();
 
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
