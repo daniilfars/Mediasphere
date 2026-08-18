@@ -31,28 +31,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/user-info", (HttpContext context) =>
-{
-    var user = context.User;
-    var allClaims = user.Claims.Select(c => new { c.Type, c.Value }).ToList();
-
-    var userId = user.FindFirst("sub")?.Value;
-    var username = user.FindFirst("preferred_username")?.Value;
-    var email = user.FindFirst("email")?.Value;
-    var roles = user.FindAll("role").Select(r => r.Value).ToList();
-
-    return Results.Ok(new
-    {
-        Id = userId,
-        Username = username,
-        Email = email,
-        _debugTotalClaimsCount = allClaims.Count,
-        _debugAllClaims = allClaims,
-        roles = roles
-    });
-})
-.RequireAuthorization();
-
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<UserDbContext>();
