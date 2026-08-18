@@ -2,6 +2,12 @@
   <Folder Name="/Backend/">
     <Project Path="Backend/Shared/Shared.csproj" Id="63c1328a-feb9-414e-9f73-5cc32448796b" />
   </Folder>
+  <Folder Name="/Backend/Post/">
+    <Project Path="Backend/Post/Application/Application.csproj" Id="1802a4ed-2955-46da-9ba4-a979864eafe5" />
+    <Project Path="Backend/Post/Domain/Domain.csproj" />
+    <Project Path="Backend/Post/Infrastructure/Infrastructure.csproj" Id="57309167-522e-41c8-ab45-08a55851bb58" />
+    <Project Path="Backend/Post/WebAPI/WebAPI.csproj" />
+  </Folder>
   <Folder Name="/Backend/User/">
     <Project Path="Backend/User/Application/Application.csproj" Id="8fc483cf-b38c-4f13-85ad-da7eb3534247" />
     <Project Path="Backend/User/Domain/Domain.csproj" Id="001f9fc6-4cfc-4f41-addb-f1585984e5aa" />

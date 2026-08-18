@@ -18,7 +18,6 @@ public class User
         if (string.IsNullOrWhiteSpace(userName))
             return Result<User>.Failure("Никнейм не может быть пустым");
 
-        var user = new User(id, userName);
-        return Result<User>.Success(user);
+        return Result<User>.Success(new User(id, userName));
     }
 }

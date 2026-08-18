@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class UserDbContext : DbContext, IUserDbContext
+public class PostDbContext : DbContext, IPostDbContext
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<Post> Posts { get; set; }
 
-    public UserDbContext() { }
-    public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
+    public PostDbContext() { }
+    public PostDbContext(DbContextOptions<PostDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ApplyConfiguration(new UserConfiguration());
+        builder.ApplyConfiguration(new PostConfiguration());
     }
 }
