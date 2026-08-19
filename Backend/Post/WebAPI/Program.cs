@@ -7,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPostInfrastructure(builder.Configuration);
 
-/*builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-    typeof(Application.Commands.UserCreated.UserCreatedHandler).Assembly));*/
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
+    typeof(Application.Commands.CreatePost.CreatePostHandler).Assembly));
 
 builder.Services.AddAppSecurity();
 

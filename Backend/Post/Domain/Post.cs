@@ -14,7 +14,6 @@ public class Post
     private Post(Guid authorId, string userName, string content, string? imageUrl)
     {
         Id = Guid.CreateVersion7();
-        //Console.WriteLine(Id);
         AuthorId = authorId;
         UserName = userName;
         Content = content;
@@ -22,7 +21,7 @@ public class Post
         ImageUrl = imageUrl;
     }
 
-    public static Result<Post> Create(Guid authorId, string userName, string content, string? imageUrl)
+    public static Result<Post> Create(Guid authorId, string userName, string content, string? imageUrl = null)
     {
         if (string.IsNullOrWhiteSpace(userName))
             return Result<Post>.Failure("Никнейм не может быть пустым");
@@ -33,7 +32,7 @@ public class Post
         return Result<Post>.Success(new Post(authorId, userName, content, imageUrl));
     }
 
-    public void UpdateImageUrl(string imageUrl)
+    public void SetImageUrl(string imageUrl)
     {
         ImageUrl = imageUrl;
     }
