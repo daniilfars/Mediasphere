@@ -36,4 +36,14 @@ public class Post
     {
         ImageUrl = imageUrl;
     }
+
+    public Result UpdateContent(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return Result.Failure("Контент поста не может быть пустым");
+
+        Content = content;
+
+        return Result.Success();
+    }
 }
