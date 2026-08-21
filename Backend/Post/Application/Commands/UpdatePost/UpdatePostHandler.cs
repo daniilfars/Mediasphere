@@ -32,6 +32,6 @@ public sealed class UpdatePostHandler : IRequestHandler<UpdatePostCommand, Resul
          
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result<UpdatePostResponse>.Success(new UpdatePostResponse(post.Id, post.AuthorId, post.UserName, post.Content, post.ImageUrl));
+        return Result<UpdatePostResponse>.Success(new UpdatePostResponse(post.Id, post.AuthorId, post.UserName, post.Content, post.Likes, post.ImageUrl));
     }
 }

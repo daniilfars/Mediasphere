@@ -24,7 +24,7 @@ public sealed class GetPostsHandler : IRequestHandler<GetPostsQuery, Result<GetP
             .OrderByDescending(p => p.Id)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(p => new PostDto(p.Id, p.AuthorId, p.UserName, p.Content, p.ImageUrl))
+            .Select(p => new PostDto(p.Id, p.AuthorId, p.UserName, p.Content, p.Likes, p.ImageUrl))
             .ToListAsync(cancellationToken);
 
         return Result<GetPostsResponse>.Success(new GetPostsResponse(posts, totalCount, request.Page, request.PageSize));

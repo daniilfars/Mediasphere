@@ -47,7 +47,7 @@ public sealed class CreatePostHandler : IRequestHandler<CreatePostCommand, Resul
             _context.Posts.Add(post);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Result<CreatePostResponse>.Success(new CreatePostResponse(post.Id, post.AuthorId, post.UserName, post.Content, post.ImageUrl));
+            return Result<CreatePostResponse>.Success(new CreatePostResponse(post.Id, post.AuthorId, post.UserName, post.Content, post.Likes, post.ImageUrl));
         }
         catch (Exception ex)
         {

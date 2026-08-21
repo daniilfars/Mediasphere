@@ -18,7 +18,7 @@ public sealed class GetPostByIdHandler : IRequestHandler<GetPostByIdQuery, Resul
     {
         var post = await _context.Posts.AsNoTracking()
             .Where(p => p.Id == request.Id)
-            .Select(p => new GetPostByIdResponse(p.Id, p.AuthorId, p.UserName, p.Content, p.ImageUrl))
+            .Select(p => new GetPostByIdResponse(p.Id, p.AuthorId, p.UserName, p.Content, p.Likes, p.ImageUrl))
             .FirstOrDefaultAsync(cancellationToken);
 
         if (post is null)
