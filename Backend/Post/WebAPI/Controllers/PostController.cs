@@ -79,7 +79,7 @@ public class PostController : ControllerBase
         return Ok(result.Value);
     }
 
-    // Put: api/post/{id}/upload-image
+    // POST: api/post/{id}/upload-image
     [Authorize]
     [HttpPost("{id}/upload-image")]
     public async Task<ActionResult<UploadPostImageResponse>> UploadPostImage(Guid id, IFormFile file)
