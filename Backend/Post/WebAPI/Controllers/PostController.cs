@@ -42,7 +42,7 @@ public class PostController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error!);
 
-        return Ok(result.Value);
+        return CreatedAtAction(nameof(GetPostById), new { id = result.Value!.Id }, result.Value);
     }
 
     // GET: api/post/{id}
