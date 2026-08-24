@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Shared.Domain;
 
 namespace Application.Commands.CreateFollow;
@@ -16,6 +17,10 @@ public sealed class CreateFollowHandler : IRequestHandler<CreateFollowCommand, R
 
     public async Task<Result<CreateFollowResponse>> Handle(CreateFollowCommand request, CancellationToken cancellationToken)
     {
+        var existFollow = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerId == request.FollowerId && f.FollowingId == request.FollowingId, cancellationToken);
+        if(existFollow is not null)
+            return Result<CreateFollowResponse>.Success(new CreateFollowResponse(existFollow.FollowerId, existFollow.FollowingId));
+
         var result = Follow.Create(request.FollowerId, request.FollowingId);
         if (result.IsFailure)
             return Result<CreateFollowResponse>.Failure(result.Error!);
