@@ -1,4 +1,5 @@
 ﻿using Application.Commands.CreateFollow;
+using Application.Queries.GetFollowers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,16 @@ public class FollowController : ControllerBase
     public async Task<ActionResult> CreateFollow(Guid followingId)
     {
         var result = await _mediator.Send(new CreateFollowCommand(Guid.Parse(User.FindFirst("sub")!.Value), followingId));
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet()]
+    public async Task<ActionResult<GetFollowersResponse>> GetFollowers([FromQuery] GetFollowersQuery query)
+    {
+        var result = await _mediator.Send(query);
         if (result.IsFailure)
             return BadRequest(result.Error);
 

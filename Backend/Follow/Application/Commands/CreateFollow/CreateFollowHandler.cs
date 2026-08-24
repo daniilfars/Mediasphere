@@ -16,7 +16,11 @@ public sealed class CreateFollowHandler : IRequestHandler<CreateFollowCommand, R
 
     public async Task<Result<CreateFollowResponse>> Handle(CreateFollowCommand request, CancellationToken cancellationToken)
     {
-        var follow = Follow.Create(request.FollowerId, request.FollowingId);
+        var result = Follow.Create(request.FollowerId, request.FollowingId);
+        if (result.IsFailure)
+            return Result<CreateFollowResponse>.Failure(result.Error!);
+
+        var follow = result.Value!;
 
         _context.Follows.Add(follow);
         await _context.SaveChangesAsync(cancellationToken);
