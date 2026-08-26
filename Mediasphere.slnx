@@ -8,6 +8,12 @@
     <Project Path="Backend/Follow/Infrastructure/Infrastructure.csproj" Id="e9463bb8-ebd9-4d60-9d85-88e08830bfe7" />
     <Project Path="Backend/Follow/WebAPI/WebAPI.csproj" Id="52a5f138-e16c-46e6-b0d9-cb902061130b" />
   </Folder>
+  <Folder Name="/Backend/Like/">
+    <Project Path="Backend/Like/Application/Application.csproj" Id="df987ce9-d32e-4a6f-8d16-9922c3cf44ff" />
+    <Project Path="Backend/Like/Domain/Domain.csproj" Id="025877d6-8a6c-452c-9fe4-6c15e1bc893f" />
+    <Project Path="Backend/Like/Infrastructure/Infrastructure.csproj" Id="ceb32bd3-549e-4707-bddc-c7fb0ef34975" />
+    <Project Path="Backend/Like/WebAPI/WebAPI.csproj" Id="e07494dc-0381-4621-95b0-74c25c92fd27" />
+  </Folder>
   <Folder Name="/Backend/Post/">
     <Project Path="Backend/Post/Application/Application.csproj" Id="1802a4ed-2955-46da-9ba4-a979864eafe5" />
     <Project Path="Backend/Post/Domain/Domain.csproj" />

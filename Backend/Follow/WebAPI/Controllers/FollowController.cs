@@ -4,7 +4,6 @@ using Application.Queries.GetFollowers;
 using Application.Queries.GetFollowings;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -54,6 +53,7 @@ public class FollowController : ControllerBase
         return Ok(result.Value);
     }
 
+    // DELETE: api/follow
     [Authorize]
     [HttpDelete]
     public async Task<IActionResult> DeleteFollow(DeleteFollowCommand command)
