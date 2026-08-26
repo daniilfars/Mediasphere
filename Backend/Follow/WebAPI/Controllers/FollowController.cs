@@ -1,4 +1,5 @@
 ﻿using Application.Commands.CreateFollow;
+using Application.Commands.DeleteFollow;
 using Application.Queries.GetFollowers;
 using Application.Queries.GetFollowings;
 using MediatR;
@@ -51,5 +52,16 @@ public class FollowController : ControllerBase
             return BadRequest(result.Error);
 
         return Ok(result.Value);
+    }
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<IActionResult> DeleteFollow(DeleteFollowCommand command)
+    {
+        var result = await _mediator.Send(command);
+        if(result.IsFailure)
+            return NotFound(result.Error);
+
+        return NoContent();
     }
 }
