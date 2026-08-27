@@ -17,9 +17,13 @@ public sealed class CreateFollowHandler : IRequestHandler<CreateFollowCommand, R
 
     public async Task<Result<CreateFollowResponse>> Handle(CreateFollowCommand request, CancellationToken cancellationToken)
     {
-        var existFollow = await _context.Follows.FirstOrDefaultAsync(f => f.FollowerId == request.FollowerId && f.FollowingId == request.FollowingId, cancellationToken);
+        var existFollow = await _context.Follows.AsNoTracking()
+            .Where(f => f.FollowerId == request.FollowerId && f.FollowingId == request.FollowingId)
+            .Select(f => new CreateFollowResponse(f.FollowerId, f.FollowingId))
+            .FirstOrDefaultAsync(cancellationToken);
+
         if(existFollow is not null)
-            return Result<CreateFollowResponse>.Success(new CreateFollowResponse(existFollow.FollowerId, existFollow.FollowingId));
+            return Result<CreateFollowResponse>.Success(existFollow);
 
         var result = Follow.Create(request.FollowerId, request.FollowingId);
         if (result.IsFailure)

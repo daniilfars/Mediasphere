@@ -17,6 +17,9 @@ public class Follow
 
     public static Result<Follow> Create(Guid followerId, Guid followingId)
     {
+        if (followerId == Guid.Empty || followingId == Guid.Empty)
+            return Result<Follow>.Failure("ID пользователей не могут быть пустыми");
+
         if (followerId == followingId)
             return Result<Follow>.Failure("Нельзя подписаться на себя");
 

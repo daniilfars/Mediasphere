@@ -46,4 +46,9 @@ public class Post
 
         return Result.Success();
     }
+
+    public void AddLike()
+    {
+        Likes++;
+    }
 }

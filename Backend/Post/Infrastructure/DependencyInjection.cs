@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;
+using MassTransit;
+using Application.Consumers;
 
 namespace Infrastructure;
 
@@ -16,6 +18,35 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IPostDbContext, PostDbContext>();
+
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<LikeOnPostConsumer>();
+
+            x.AddEntityFrameworkOutbox<PostDbContext>(f =>
+            {
+                f.UsePostgres();
+                f.UseBusOutbox();
+            });
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration["RabbitMQ:Host"] ?? "rabbitmq", "/", h =>
+                {
+                    h.Username(configuration["RabbitMQ:Username"] ?? "guest");
+                    h.Password(configuration["RabbitMQ:Password"] ?? "guest");
+                });
+
+                cfg.UseMessageRetry(r => r.Exponential(
+                    4,
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromSeconds(3)
+                ));
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         var minioSettings = configuration.GetSection("Minio");
         var endpoint = minioSettings["Endpoint"]!;

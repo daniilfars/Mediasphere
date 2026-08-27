@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain;
 using Infrastructure.Configurations;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -17,5 +18,6 @@ public class LikeDbContext : DbContext, ILikeDbContext
         base.OnModelCreating(builder);
         builder.HasPostgresEnum<LikeTargetType>();
         builder.ApplyConfiguration(new LikeConfiguration());
+        builder.AddTransactionalOutboxEntities();
     }
 }

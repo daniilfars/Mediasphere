@@ -5,7 +5,7 @@ using Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPostInfrastructure(builder.Configuration);
+builder.Services.AddFollowInfrastructure(builder.Configuration);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(Application.Commands.CreateFollow.CreateFollowHandler).Assembly));

@@ -8,7 +8,7 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPostInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddFollowInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<FollowDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));

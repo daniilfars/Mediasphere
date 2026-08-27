@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain;
 using Infrastructure.Configurations;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -16,5 +17,6 @@ public class PostDbContext : DbContext, IPostDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfiguration(new PostConfiguration());
+        builder.AddTransactionalOutboxEntities();
     }
 }

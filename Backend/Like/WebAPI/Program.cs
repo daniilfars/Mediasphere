@@ -5,10 +5,10 @@ using Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPostInfrastructure(builder.Configuration);
+builder.Services.AddLikeInfrastructure(builder.Configuration);
 
-/*builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-    typeof(Application.Commands.CreateFollow.CreateFollowHandler).Assembly));*/
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
+    typeof(Application.Commands.CreateLike.CreateLikeCommand).Assembly));
 
 builder.Services.AddAppSecurity();
 
