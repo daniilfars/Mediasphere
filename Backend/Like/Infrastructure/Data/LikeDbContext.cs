@@ -18,5 +18,6 @@ public class LikeDbContext : DbContext, ILikeDbContext
         base.OnModelCreating(builder);
         builder.HasPostgresEnum<LikeTargetType>();
         builder.ApplyConfiguration(new LikeConfiguration());
+        builder.AddTransactionalOutboxEntities();
     }
 }

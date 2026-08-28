@@ -13,7 +13,7 @@ public static class DependencyInjection
         services.AddDbContext<FollowDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IFollowDbContext, FollowDbContext>();
+        services.AddScoped<IFollowDbContext>(provider => provider.GetRequiredService<FollowDbContext>());
 
         return services;
     }

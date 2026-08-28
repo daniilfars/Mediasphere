@@ -17,7 +17,7 @@ public static class DependencyInjection
         services.AddDbContext<PostDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IPostDbContext, PostDbContext>();
+        services.AddScoped<IPostDbContext>(provider => provider.GetRequiredService<PostDbContext>());
 
         services.AddMassTransit(x =>
         {

@@ -15,11 +15,17 @@ public static class DependencyInjection
         services.AddDbContext<LikeDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<ILikeDbContext, LikeDbContext>();
+        services.AddScoped<ILikeDbContext>(provider => provider.GetRequiredService<LikeDbContext>());
 
         services.AddMassTransit(x =>
         {
             x.AddConsumer<ContentNotFoundConsumer>();
+
+            x.AddEntityFrameworkOutbox<LikeDbContext>(f =>
+            {
+                f.UsePostgres();
+                f.UseBusOutbox();
+            });
 
             x.UsingRabbitMq((context, cfg) =>
             {
