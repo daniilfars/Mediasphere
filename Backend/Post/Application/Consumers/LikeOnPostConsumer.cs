@@ -16,8 +16,6 @@ public class LikeOnPostConsumer : IConsumer<LikeOnPost>
 
     public async Task Consume(ConsumeContext<LikeOnPost> context)
     {
-        Console.WriteLine("============= УРАА или НЕЕТ? ===================");
-
         var post = await _db.Posts.FirstOrDefaultAsync(p => p.Id == context.Message.PostId, context.CancellationToken);
         if(post is null)
         {

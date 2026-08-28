@@ -21,12 +21,6 @@ public static class DependencyInjection
         {
             x.AddConsumer<ContentNotFoundConsumer>();
 
-            x.AddEntityFrameworkOutbox<LikeDbContext>(f =>
-            {
-                f.UsePostgres();
-                f.UseBusOutbox();
-            });
-
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(configuration["RabbitMQ:Host"] ?? "rabbitmq", "/", h =>

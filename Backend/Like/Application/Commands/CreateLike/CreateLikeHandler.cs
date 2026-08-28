@@ -37,19 +37,12 @@ public sealed class CreateLikeHandler : IRequestHandler<CreateLikeCommand, Resul
 
         _context.Likes.Add(like);
 
-        Console.WriteLine("============= fwf1 ===================");
-
         if (like.TargetType == LikeTargetType.Post)
-        {
-            Console.WriteLine("============= fwf2 ===================");
             await _publishEndpoint.Publish<LikeOnPost>(new { LikeId = like.Id, PostId = like.ContentId }, cancellationToken);
-        }
         /*if (like.TargetType == LikeTargetType.Comment)
             await _publishEndpoint.Publish<>(new {  });*/
 
         await _context.SaveChangesAsync(cancellationToken);
-
-        Console.WriteLine("============= fwf3 ===================");
 
         return Result<CreateLikeResponse>.Success(new CreateLikeResponse(like.Id, like.UserId, like.TargetType, like.ContentId));
     }
