@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddMassTransit(x =>
         {
             x.AddConsumer<LikeOnPostConsumer>();
+            x.AddConsumer<LikeOnPostDeletedConsumer>();
 
             x.AddEntityFrameworkOutbox<PostDbContext>(f =>
             {

@@ -51,4 +51,9 @@ public class Post
     {
         Likes++;
     }
+
+    public void DeleteLike()
+    {
+        Likes--;
+    }
 }
