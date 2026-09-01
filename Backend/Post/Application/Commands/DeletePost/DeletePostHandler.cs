@@ -1,7 +1,9 @@
 ﻿using Application.Interfaces;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Contracts;
 using Shared.Domain;
 
 namespace Application.Commands.DeletePost;
@@ -11,12 +13,14 @@ public sealed class DeletePostHandler : IRequestHandler<DeletePostCommand, Resul
     private readonly IPostDbContext _context;
     private readonly IImageStorageService _imageStorageService;
     private readonly ILogger<DeletePostHandler> _logger;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public DeletePostHandler(IPostDbContext context, IImageStorageService imageStorageService, ILogger<DeletePostHandler> logger)
+    public DeletePostHandler(IPostDbContext context, IImageStorageService imageStorageService, ILogger<DeletePostHandler> logger, IPublishEndpoint publishEndpoint)
     {
         _context = context;
         _imageStorageService = imageStorageService;
         _logger = logger;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result> Handle(DeletePostCommand request, CancellationToken cancellationToken)
@@ -42,6 +46,8 @@ public sealed class DeletePostHandler : IRequestHandler<DeletePostCommand, Resul
         }
 
         _context.Posts.Remove(post);
+
+        await _publishEndpoint.Publish<PostDeleted>(new { PostId = post.Id }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
         return Result.Success();

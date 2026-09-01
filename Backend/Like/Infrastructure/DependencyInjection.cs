@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddMassTransit(x =>
         {
             x.AddConsumer<ContentNotFoundConsumer>();
+            x.AddConsumer<PostDeletedConsumer>();
 
             x.AddEntityFrameworkOutbox<LikeDbContext>(f =>
             {
