@@ -127,6 +127,35 @@ services:
       timeout: 5s
       retries: 5
 
+  comment-api:
+    build:
+      context: .
+      dockerfile: ./Backend/Comment/WebAPI/Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=comment-db;Port=5432;Database=CommentDb;Username=postgres;Password=${POSTGRES_PASSWORD}
+    depends_on:
+      comment-db:
+        condition: service_healthy
+
+  comment-db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: CommentDb
+    ports:
+      - "5437:5432"
+    volumes:
+      - comment_db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d CommentDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   minio:
     image: minio/minio:latest
     command: server /data --console-address ":9001"
@@ -199,6 +228,7 @@ volumes:
   post_db_data:
   follow_db_data:
   like_db_data:
+  comment_db_data:
   minio_data:
   rabbitmq_data:  
   postgres_data:

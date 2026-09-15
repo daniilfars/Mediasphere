@@ -20,8 +20,8 @@ public class Like
     public static Result<Like> Create(Guid userId, LikeTargetType targetType, Guid contentId)
     {
         if (userId == Guid.Empty || contentId == Guid.Empty)
-            return Result.Failure<Like>("ID пользователи или контента не могут быть пустыми");
+            return Result<Like>.Failure("ID пользователя или контента не могут быть пустыми");
 
-        return Result.Success(new Like(userId, targetType, contentId));
+        return Result<Like>.Success(new Like(userId, targetType, contentId));
     }
 }
