@@ -27,4 +27,13 @@ public class Comment
 
         return Result<Comment>.Success(new Comment(Guid.NewGuid(), userId, postId, content));
     }
+
+    public Result UpdateContent(string? content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return Result.Failure("Контент комментария не может быть пустым");
+
+        Content = content;
+        return Result.Success();
+    }
 }

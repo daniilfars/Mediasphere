@@ -23,13 +23,10 @@ public sealed class UpdatePostHandler : IRequestHandler<UpdatePostCommand, Resul
         if(post.AuthorId != request.UserId)
             return Result<UpdatePostResponse>.Failure("Нету прав на обновление поста");
 
-        if (!string.IsNullOrWhiteSpace(request.Content))
-        {
-            var result = post.UpdateContent(request.Content);
-            if(result.IsFailure)
-                return Result<UpdatePostResponse>.Failure(result.Error!);
-        }
-         
+        var result = post.UpdateContent(request.Content);
+        if(result.IsFailure)
+            return Result<UpdatePostResponse>.Failure(result.Error!);
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<UpdatePostResponse>.Success(new UpdatePostResponse(post.Id, post.AuthorId, post.UserName, post.Content, post.Likes, post.ImageUrl));
