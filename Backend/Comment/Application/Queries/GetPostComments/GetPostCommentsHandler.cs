@@ -23,7 +23,7 @@ public sealed class GetPostCommentsHandler : IRequestHandler<GetPostCommentsQuer
 
         var comments = await query.Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(c => new CommentDto(c.Id, c.UserId, c.PostId, c.Content))
+            .Select(c => new CommentDto(c.Id, c.AuthorId, c.UserName, c.PostId, c.Content, c.Likes))
             .ToListAsync(cancellationToken);
 
         return Result<GetPostCommentsResponse>.Success(new GetPostCommentsResponse(comments, totalCount, request.Page, request.PageSize));

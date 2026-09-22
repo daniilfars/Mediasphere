@@ -5,27 +5,34 @@ namespace Domain;
 public class Comment
 {
     public Guid Id { get; private set; }
-    public Guid UserId { get; private set; }
+    public Guid AuthorId { get; private set; }
+    public string UserName { get; private set; }
     public Guid PostId { get; private set; }
     public string Content { get; private set; }
+    public long Likes { get; private set; }
 
-    private Comment(Guid id, Guid userId, Guid postId, string content)
+    private Comment(Guid authorId, string userName, Guid postId, string content)
     {
-        Id = id;
-        UserId = userId;
+        Id = Guid.CreateVersion7();
+        AuthorId = authorId;
+        UserName = userName;
         PostId = postId;
         Content = content;
+        Likes = 0;
     }
 
-    public static Result<Comment> Create(Guid userId, Guid postId, string content)
+    public static Result<Comment> Create(Guid authorId, string userName, Guid postId, string content)
     {
-        if (userId == Guid.Empty || postId == Guid.Empty)
+        if (authorId == Guid.Empty || postId == Guid.Empty)
             return Result<Comment>.Failure("ID пользователя или поста не могут быть пустыми");
+
+        if (string.IsNullOrWhiteSpace(userName))
+            return Result<Comment>.Failure("Имя пользователя не может быть пустым");
 
         if (string.IsNullOrWhiteSpace(content))
             return Result<Comment>.Failure("Контент комментария не может быть пустым");
 
-        return Result<Comment>.Success(new Comment(Guid.NewGuid(), userId, postId, content));
+        return Result<Comment>.Success(new Comment(authorId, userName, postId, content));
     }
 
     public Result UpdateContent(string? content)
@@ -35,5 +42,15 @@ public class Comment
 
         Content = content;
         return Result.Success();
+    }
+
+    public void AddLike()
+    {
+        Likes++;
+    }
+
+    public void DeleteLike()
+    {
+        Likes--;
     }
 }

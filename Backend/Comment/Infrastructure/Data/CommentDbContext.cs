@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -15,5 +16,6 @@ public class CommentDbContext : DbContext, ICommentDbContext
     {
         base.OnModelCreating(builder);
         //builder.ApplyConfiguration(new CommentConfiguration());
+        builder.AddTransactionalOutboxEntities();
     }
 }

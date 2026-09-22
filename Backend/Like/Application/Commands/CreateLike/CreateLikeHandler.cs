@@ -39,8 +39,8 @@ public sealed class CreateLikeHandler : IRequestHandler<CreateLikeCommand, Resul
 
         if (like.TargetType == LikeTargetType.Post)
             await _publishEndpoint.Publish<LikeOnPost>(new { LikeId = like.Id, PostId = like.ContentId }, cancellationToken);
-        /*if (like.TargetType == LikeTargetType.Comment)
-            await _publishEndpoint.Publish<>(new {  });*/
+        if (like.TargetType == LikeTargetType.Comment)
+            await _publishEndpoint.Publish<LikeOnComment>(new { LikeId = like.Id, CommentId = like.ContentId }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

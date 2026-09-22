@@ -16,7 +16,7 @@ public sealed class CreateCommentHandler : IRequestHandler<CreateCommentCommand,
 
     public async Task<Result<CreateCommentResponse>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
     {
-        var result = Comment.Create(request.UserId, request.PostId, request.Content);
+        var result = Comment.Create(request.AuthorId, request.UserName, request.PostId, request.Content);
         if (result.IsFailure)
             return Result<CreateCommentResponse>.Failure(result.Error!);
 
@@ -25,6 +25,6 @@ public sealed class CreateCommentHandler : IRequestHandler<CreateCommentCommand,
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result<CreateCommentResponse>.Success(new CreateCommentResponse(comment.Id, comment.UserId, comment.PostId, comment.Content));
+        return Result<CreateCommentResponse>.Success(new CreateCommentResponse(comment.Id, comment.AuthorId, comment.UserName, comment.PostId, comment.Content, comment.Likes));
     }
 }

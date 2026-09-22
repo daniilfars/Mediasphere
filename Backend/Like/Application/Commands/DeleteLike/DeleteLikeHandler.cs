@@ -32,8 +32,8 @@ public sealed class DeleteLikeHandler : IRequestHandler<DeleteLikeCommand, Resul
 
         if (like.TargetType == LikeTargetType.Post)
             await _publishEndpoint.Publish<LikeOnPostDeleted>(new { PostId = like.ContentId }, cancellationToken);
-        /*if (like.TargetType == LikeTargetType.Comment)
-            await _publishEndpoint.Publish<LikeOnCommentDeleted>(new { CommentId = like.ContentId });*/
+        if (like.TargetType == LikeTargetType.Comment)
+            await _publishEndpoint.Publish<LikeOnCommentDeleted>(new { CommentId = like.ContentId });
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -20,7 +20,7 @@ public sealed class UpdateCommentHandler : IRequestHandler<UpdateCommentCommand,
         if (comment is null)
             return Result<UpdateCommentResponse>.Failure("Комментарий не найден");
 
-        if (comment.UserId != request.UserId)
+        if (comment.AuthorId != request.AuthorId)
             return Result<UpdateCommentResponse>.Failure("Нет доступа к редактированию комментария");
 
         var result = comment.UpdateContent(request.Content);
@@ -29,6 +29,6 @@ public sealed class UpdateCommentHandler : IRequestHandler<UpdateCommentCommand,
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result<UpdateCommentResponse>.Success(new UpdateCommentResponse(comment.Id, comment.UserId, comment.PostId, comment.Content));
+        return Result<UpdateCommentResponse>.Success(new UpdateCommentResponse(comment.Id, comment.AuthorId, comment.UserName, comment.PostId, comment.Content, comment.Likes));
     }
 }

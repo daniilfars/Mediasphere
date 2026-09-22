@@ -26,7 +26,9 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateComment(CreateCommentDto command)
     {
-        var result = await _mediator.Send(new CreateCommentCommand(Guid.Parse(User.FindFirst("sub")!.Value), command.PostId, command.Content));
+        var result = await _mediator.Send(
+            new CreateCommentCommand(Guid.Parse(User.FindFirst("sub")!.Value), User.FindFirst("preferred_username")!.Value, command.PostId, command.Content
+            ));
         if (result.IsFailure)
             return BadRequest(result.Error);
 
