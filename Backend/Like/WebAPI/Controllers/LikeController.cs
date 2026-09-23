@@ -35,9 +35,9 @@ public class LikeController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetLike(GetLikeDto query)
+    public async Task<ActionResult> GetLike(LikeTargetType targetType, Guid contentId)
     {
-        var result = await _mediator.Send(new GetLikeQuery(Guid.Parse(User.FindFirst("sub")!.Value), query.TargetType, query.ContentId));
+        var result = await _mediator.Send(new GetLikeQuery(Guid.Parse(User.FindFirst("sub")!.Value), targetType, contentId));
 
         if (result.IsFailure)
             return NotFound(result.Error);

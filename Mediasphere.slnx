@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Backend/">
+    <Project Path="Backend/Gateway/Gateway.csproj" Id="025773c4-cefc-4bf2-b69c-edcc1883af02" />
     <Project Path="Backend/Shared/Shared.csproj" Id="63c1328a-feb9-414e-9f73-5cc32448796b" />
   </Folder>
   <Folder Name="/Backend/Comment/">
@@ -36,4 +37,8 @@
     <File Path=".env" />
     <File Path="docker-compose.yml" />
   </Folder>
+  <Project Path="Frontend/frontend.client/frontend.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
 </Solution>

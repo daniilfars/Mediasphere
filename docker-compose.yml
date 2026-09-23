@@ -156,6 +156,19 @@ services:
       timeout: 5s
       retries: 5
 
+  gateway:
+    build:
+      context: .
+      dockerfile: ./Backend/Gateway/Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - post-api
+      - user-api
+      - follow-api
+      - like-api
+      - comment-api
+
   minio:
     image: minio/minio:latest
     command: server /data --console-address ":9001"
