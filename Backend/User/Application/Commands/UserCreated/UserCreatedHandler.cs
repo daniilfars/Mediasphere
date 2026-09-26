@@ -1,18 +1,40 @@
 ﻿using Application.Interfaces;
 using Domain;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Contracts;
 using Shared.Domain;
 
 namespace Application.Commands.UserCreated;
 
-public sealed class UserCreatedHandler : IRequestHandler<UserCreatedCommand, Result<UserCreatedResponse>>
+public sealed class UserCreatedHandler : IRequestHandler<UserCreatedCommand, Result<UserCreatedResponse>>, IConsumer<KeycloakRegister>
 {
     private readonly IUserDbContext _context;
 
     public UserCreatedHandler(IUserDbContext context)
     {
         _context = context;
+    }
+
+    public async Task Consume(ConsumeContext<KeycloakRegister> context)
+    {
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(context.Message));
+
+        context.Message.Details.TryGetValue("username", out var userName);
+        Guid id = context.Message.UserId;
+
+        var userExists = await _context.Users.AnyAsync(u => u.Id == id, context.CancellationToken);
+
+        if (userExists)
+            return;
+
+        var result = User.Create(id, userName!);
+        if (result.IsFailure)
+            return;
+
+        _context.Users.Add(result.Value!);
+        await _context.SaveChangesAsync(context.CancellationToken);
     }
 
     public async Task<Result<UserCreatedResponse>> Handle(UserCreatedCommand request, CancellationToken cancellationToken)

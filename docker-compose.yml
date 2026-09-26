@@ -46,8 +46,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=user-db;Port=5432;Database=UserDb;Username=postgres;Password=${POSTGRES_PASSWORD}
+      - RabbitMQ__Host=rabbitmq
     depends_on:
       user-db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   user-db:
@@ -139,6 +142,8 @@ services:
     depends_on:
       comment-db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   comment-db:
     image: postgres:18
@@ -194,10 +199,22 @@ services:
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
+      WEBHOOK_AMQP_HOST: rabbitmq
+      WEBHOOK_AMQP_PORT: 5672
+      WEBHOOK_AMQP_USERNAME: guest
+      WEBHOOK_AMQP_PASSWORD: guest
+      WEBHOOK_AMQP_VHOST: "/"
+      WEBHOOK_AMQP_EXCHANGE: amq.topic
+      WEBHOOK_AMQP_SSL: "no"
+      WEBHOOK_EVENTS_TAKEN: REGISTER
     ports:
       - "8080:8080"
+    volumes:
+      - ./keycloak-providers:/opt/keycloak/providers
     depends_on:
       postgres:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   rabbitmq:
