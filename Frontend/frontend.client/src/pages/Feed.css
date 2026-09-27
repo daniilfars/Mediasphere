@@ -1,0 +1,10 @@
+.feed {
+    max-width: 100%;
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #3c3c3c;
+    border-radius: 10px;
+    overflow: hidden;
+}

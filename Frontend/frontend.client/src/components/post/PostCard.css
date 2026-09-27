@@ -1,0 +1,55 @@
+.post-card {
+    background-color: var(--element-bg);
+}
+
+.post-card-header {
+    padding: 10px 10px;
+}
+
+.post-card-header a {
+    color: var(--text-h);
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.post-card-body img {
+    width: 100%;
+}
+
+.post-card-body p {
+    color: var(--text-h);
+    font-weight: 500;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+.post-card-context {
+    
+}
+
+.post-card-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+}
+
+.post-actions-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.post-actions-item button {
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+    line-height: 1;
+}
+
+.post-actions-item button svg {
+    width: 20px;
+    height: 20px;
+}

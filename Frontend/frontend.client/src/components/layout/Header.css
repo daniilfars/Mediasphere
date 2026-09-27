@@ -1,0 +1,30 @@
+.header {
+    background-color: var(--element-bg);
+}
+
+.header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.header-logo img {
+    max-width: 50px;
+}
+
+.header-link span {
+    font-family: var(--heading);
+    color: var(--text-h);
+    font-size: 18px;
+}
+
+.header-logo span {
+    font-size: 25px;
+}
