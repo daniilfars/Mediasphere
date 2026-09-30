@@ -1,4 +1,5 @@
 ﻿using Shared.Domain;
+using Shared.Extensions;
 
 namespace Domain;
 
@@ -10,6 +11,7 @@ public class Post
     public string Content { get; private set; }
     public long Likes { get; private set; }
     public string? ImageUrl { get; private set; }
+    public DateTime CreatedAt => Id.GetCreatedAtUtc();
 
     private Post(Guid authorId, string userName, string content, string? imageUrl)
     {
