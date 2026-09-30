@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddUserInfrastructure(builder.Configuration);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-    typeof(Application.Commands.UserCreated.UserCreatedHandler).Assembly));
+    typeof(Application.Queries.GetUser.GetUserByIdHandler).Assembly));
 
 builder.Services.AddAppSecurity();
 

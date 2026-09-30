@@ -1,4 +1,4 @@
-﻿using Application.Commands.UserCreated;
+﻿using Application.Consumers;
 using Application.Interfaces;
 using Infrastructure.Data;
 using MassTransit;
@@ -19,7 +19,7 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<UserCreatedHandler>();
+            x.AddConsumer<KeycloakRegisterConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -37,6 +37,17 @@ public static class DependencyInjection
                     TimeSpan.FromSeconds(30),
                     TimeSpan.FromSeconds(3)
                 ));
+
+                cfg.ReceiveEndpoint("KeycloakRegister", e =>
+                {
+                    e.ConfigureConsumer<KeycloakRegisterConsumer>(context);
+                    e.Bind("amq.topic", b =>
+                    {
+                        b.RoutingKey = "#";
+                        b.ExchangeType = "topic";
+                        b.Durable = true;
+                    });
+                });
 
                 cfg.ConfigureEndpoints(context);
             });
