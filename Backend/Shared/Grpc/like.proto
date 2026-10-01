@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option csharp_namespace = "LikeGrpc";
+ 
+package like;
+
+enum TargetType {
+	TARGET_TYPE_UNSPECIFIED = 0;
+	POST = 1;
+	COMMENT = 2;
+}
+
+service LikeService{
+	rpc CheckLikes (CheckLikesRequest) returns (CheckLikesResponse);
+}
+
+message CheckLikesRequest{
+	string user_id = 1;
+	TargetType target_type = 2;
+	repeated string content_ids = 3;
+}
+
+message LikedPostStatus {
+	string content_id = 1;
+	bool is_liked = 2;
+}
+
+message CheckLikesResponse{
+	repeated LikedPostStatus results = 1;
+}

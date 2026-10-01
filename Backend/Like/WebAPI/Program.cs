@@ -1,3 +1,4 @@
+using Application.Grpc;
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddGrpc();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -28,6 +31,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGrpcService<LikeGrpcService>();
 
 app.MapControllers();
 
