@@ -104,8 +104,14 @@ services:
       dockerfile: ./Backend/Like/WebAPI/Dockerfile
     ports:
       - "8084:8080"
+      - "5004:5004"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;http://+:5004
+      - ASPNETCORE_KESTREL__ENDPOINTS__HTTP1__URL=http://+:8080
+      - ASPNETCORE_KESTREL__ENDPOINTS__HTTP1__PROTOCOLS=Http1
+      - ASPNETCORE_KESTREL__ENDPOINTS__GRPC__URL=http://+:5004
+      - ASPNETCORE_KESTREL__ENDPOINTS__GRPC__PROTOCOLS=Http2
       - ConnectionStrings__DefaultConnection=Host=like-db;Port=5432;Database=LikeDb;Username=postgres;Password=${POSTGRES_PASSWORD}
       - RabbitMQ__Host=rabbitmq
     depends_on:

@@ -1,4 +1,10 @@
+using Gateway.Models;
+using LikeGrpc;
+using Shared.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAppSecurity();
 
 builder.Services.AddCors(options =>
 {
@@ -10,11 +16,43 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpClient();
+
+builder.Services.AddGrpcClient<LikeService.LikeServiceClient>(o =>
+{
+    o.Address = new Uri("http://like-api:5004");
+});
+
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
 
 app.UseCors("Frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet("api/feed", async (int? page, int? pageSize, System.Security.Claims.ClaimsPrincipal user, IHttpClientFactory httpClientFactory, LikeService.LikeServiceClient likeClient) =>
+{
+    var httpClient = httpClientFactory.CreateClient();
+    var response = await httpClient.GetFromJsonAsync<GetPostsResponse>($"http://post-api:8080/api/post?Page={page ?? 1}&PageSize={pageSize ?? 10}");
+    if(response is null)
+        return Results.NoContent();
+
+    var postsIds = response.posts.ConvertAll(x => x.Id.ToString());
+
+    var request = new CheckLikesRequest { UserId = user.FindFirst("sub")?.Value, TargetType = TargetType.Post };
+    request.ContentIds.AddRange(postsIds);
+
+    var res = await likeClient.CheckLikesAsync(request);
+
+    var likes = res.Results.ToDictionary(l => l.ContentId, l => l.IsLiked);
+
+    return Results.Ok(new FeedDto(
+        response.posts.ConvertAll(p => new PostDto(p.Id, p.AuthorId, p.UserName, p.Content, p.Likes, p.ImageUrl, p.CreatedAt, likes.TryGetValue(p.Id.ToString(), out var isLiked) && isLiked)),
+        response.TotalCount, response.Page, response.PageSize
+    ));
+}).RequireAuthorization();
 
 app.MapReverseProxy();
 

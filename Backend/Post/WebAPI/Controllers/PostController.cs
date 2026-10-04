@@ -58,8 +58,8 @@ public class PostController : ControllerBase
     }
 
     // GET: api/post
-    [HttpGet()]
-    public async Task<ActionResult<GetPostByIdResponse>> GetPosts([FromQuery] GetPostsQuery query)
+    [HttpGet]
+    public async Task<ActionResult<GetPostsResponse>> GetPosts([FromQuery] GetPostsQuery query)
     {
         var result = await _mediator.Send(query);
 
@@ -68,7 +68,7 @@ public class PostController : ControllerBase
 
     // PUT: api/post
     [Authorize]
-    [HttpPut()]
+    [HttpPut]
     public async Task<ActionResult<GetPostByIdResponse>> UpdatePost(UpdatePostRequest request)
     {
         var result = await _mediator.Send(new UpdatePostCommand(request.Id, Guid.Parse(User.FindFirst("sub")!.Value), request.Content));

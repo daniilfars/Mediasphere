@@ -10,11 +10,11 @@ enum TargetType {
 	COMMENT = 2;
 }
 
-service LikeService{
+service LikeService {
 	rpc CheckLikes (CheckLikesRequest) returns (CheckLikesResponse);
 }
 
-message CheckLikesRequest{
+message CheckLikesRequest {
 	string user_id = 1;
 	TargetType target_type = 2;
 	repeated string content_ids = 3;
@@ -25,6 +25,6 @@ message LikedPostStatus {
 	bool is_liked = 2;
 }
 
-message CheckLikesResponse{
+message CheckLikesResponse {
 	repeated LikedPostStatus results = 1;
 }
