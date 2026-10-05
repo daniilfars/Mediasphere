@@ -49,6 +49,14 @@
     line-height: 1;
 }
 
+.is-liked {
+    color: red;
+}
+
+.is-liked svg {
+    fill: currentColor;
+}
+
 .post-actions-item button svg {
     width: 20px;
     height: 20px;

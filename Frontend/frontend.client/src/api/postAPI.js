@@ -2,7 +2,7 @@ import { request } from "./client";
 
 export const postAPI = {
     getAll: (page = 1, pageSize = 10) =>
-        request(`/Post?page=${page}&pageSize=${pageSize}`),
+        request(`/Feed?page=${page}&pageSize=${pageSize}`),
 
     getById: (id) => 
         request(`/Post/${id}`),

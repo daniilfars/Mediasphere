@@ -10,7 +10,7 @@ export default function Feed() {
   const [isLoading, setIsLoading] = useState(true);
   const pageSize = 12;
 
-  const totalPages = Math.ceil(totalCount / pageSize)
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   const loadPosts = async (currentPage = page) => {
     try {

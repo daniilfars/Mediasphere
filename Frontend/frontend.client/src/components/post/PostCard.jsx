@@ -1,7 +1,11 @@
+import { formatDistanceToNow, format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import './PostCard.css';
 
 export default function PostCard({ post }) {
+  const date = new Date(post.createdAt);
+
   return (
     <article className="post-card">
         <header className="post-card-header">
@@ -14,7 +18,7 @@ export default function PostCard({ post }) {
         <footer className="post-card-actions">
             <div className="post-actions-container">
                 <div className="post-actions-item">
-                    <button className="post-card-like" type="button" aria-label="Поставить лайк">
+                    <button className={`post-card-like ${post.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
                         <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                         </svg>
@@ -30,13 +34,10 @@ export default function PostCard({ post }) {
                     </button>
                 </div>
             </div>
-            {/* когда будет createdAt поле
             <div className="post-actions-container">
-                <p className="post-actions-date">{post.createdAt}</p>
-            </div>
-            */}
-            <div className="post-actions-container">
-                <p className="post-actions-date">2 days before</p>
+                <time className="post-actions-date" dateTime={post.createdAt} title={format(date, "d MMMM 'в' HH:mm", { locale: ru })}>
+                    {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: ru })}
+                </time>
             </div>
         </footer>
     </article>
