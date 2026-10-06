@@ -29,6 +29,7 @@ public sealed class DeleteCommentHandler : IRequestHandler<DeleteCommentCommand,
 
         _context.Comments.Remove(comment);
 
+        await _publishEndpoint.Publish<CommentOnPostDeleted>(new { PostId = comment.PostId }, cancellationToken);
         await _publishEndpoint.Publish<CommentDeleted>(new { CommentId = comment.Id }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);

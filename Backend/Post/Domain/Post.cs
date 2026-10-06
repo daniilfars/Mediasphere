@@ -10,6 +10,7 @@ public class Post
     public string UserName { get; private set; }
     public string Content { get; private set; }
     public long Likes { get; private set; }
+    public long Comments { get; private set; }
     public string? ImageUrl { get; private set; }
     public DateTime CreatedAt => Id.GetCreatedAtUtc();
 
@@ -20,6 +21,7 @@ public class Post
         UserName = userName;
         Content = content;
         Likes = 0;
+        Comments = 0;
         ImageUrl = imageUrl;
     }
 
@@ -57,5 +59,15 @@ public class Post
     public void DeleteLike()
     {
         Likes--;
+    }
+
+    public void AddComment()
+    {
+        Comments++;
+    }
+
+    public void DeleteComment()
+    {
+        Comments--;
     }
 }

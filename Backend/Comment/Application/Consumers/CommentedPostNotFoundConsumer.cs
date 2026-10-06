@@ -2,28 +2,25 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.Contracts;
+
 namespace Application.Consumers;
 
-public class LikeOnCommentConsumer : IConsumer<LikeOnComment>
+public class CommentedPostNotFoundConsumer : IConsumer<CommentedPostNotFound>
 {
     private readonly ICommentDbContext _db;
 
-    public LikeOnCommentConsumer(ICommentDbContext db)
+    public CommentedPostNotFoundConsumer(ICommentDbContext db)
     {
         _db = db;
     }
 
-    public async Task Consume(ConsumeContext<LikeOnComment> context)
+    public async Task Consume(ConsumeContext<CommentedPostNotFound> context)
     {
         var comment = await _db.Comments.FirstOrDefaultAsync(c => c.Id == context.Message.CommentId, context.CancellationToken);
-        if(comment is null)
-        {
-            await context.Publish<LikedContentNotFound>(new { LikeId = context.Message.LikeId }, context.CancellationToken);
+        if (comment is null)
             return;
-        }
 
-        comment.AddLike();
-
+        _db.Comments.Remove(comment);
         await _db.SaveChangesAsync(context.CancellationToken);
     }
 }

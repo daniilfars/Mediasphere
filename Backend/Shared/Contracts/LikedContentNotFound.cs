@@ -1,6 +1,6 @@
 ﻿namespace Shared.Contracts;
 
-public interface ContentNotFound
+public interface LikedContentNotFound
 {
     Guid LikeId { get; }
 }

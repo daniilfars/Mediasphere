@@ -21,6 +21,8 @@ public static class DependencyInjection
         {
             x.AddConsumer<LikeOnCommentConsumer>();
             x.AddConsumer<LikeOnCommentDeletedConsumer>();
+            x.AddConsumer<CommentedPostNotFoundConsumer>();
+            x.AddConsumer<DeleteCommentsPostDeletedConsumer>();
 
             x.AddEntityFrameworkOutbox<CommentDbContext>(f =>
             {
