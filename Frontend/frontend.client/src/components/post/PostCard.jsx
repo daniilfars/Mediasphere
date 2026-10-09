@@ -1,10 +1,42 @@
 import { formatDistanceToNow, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { likeAPI} from '../../api/likeAPI';
 import './PostCard.css';
 
 export default function PostCard({ post }) {
   const date = new Date(post.createdAt);
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [likesCount, setLikesCount] = useState(post.likes);
+
+  useEffect(() => {
+    setIsLiked(post.isLiked);
+    setLikesCount(post.likes);
+  }, [post.isLiked, post.likes]);
+
+  const handleButtonLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const previousIsLiked = isLiked;
+    const previousLikesCount = likesCount;
+
+    setIsLiked(!previousIsLiked);
+    setLikesCount(prev => previousIsLiked ? prev - 1 : prev + 1);
+
+    try {
+        if(!previousIsLiked)
+            await likeAPI.create(1, post.id);
+        else {
+            await likeAPI.delete(1, post.id);
+        }
+    }
+    catch {
+        setIsLiked(previousIsLiked);
+        setLikesCount(previousLikesCount);
+    }
+  };
 
   return (
     <article className="post-card">
@@ -18,11 +50,11 @@ export default function PostCard({ post }) {
         <footer className="post-card-actions">
             <div className="post-actions-container">
                 <div className="post-actions-item">
-                    <button className={`post-card-like ${post.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
+                    <button onClick={handleButtonLike} className={`post-card-like ${isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
                         <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                         </svg>
-                        <span>{post.likes}</span>
+                        <span>{likesCount}</span>
                     </button>
                 </div>
                 <div className="post-actions-item">
@@ -30,7 +62,7 @@ export default function PostCard({ post }) {
                         <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                         </svg>
-                        <span>{post.likes}</span>
+                        <span>{post.comments}</span>
                     </button>
                 </div>
             </div>

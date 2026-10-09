@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CreateLike;
 using Application.Commands.DeleteLike;
+using Application.Commands.DeleteLikeByContentId;
 using Application.Queries.GetLike;
 using Domain;
 using MediatR;
@@ -35,9 +36,9 @@ public class LikeController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult> GetLike(LikeTargetType targetType, Guid contentId)
+    public async Task<ActionResult> GetLikeById(LikeTargetType targetType, Guid contentId)
     {
-        var result = await _mediator.Send(new GetLikeQuery(Guid.Parse(User.FindFirst("sub")!.Value), targetType, contentId));
+        var result = await _mediator.Send(new GetLikeByContentIdQuery(Guid.Parse(User.FindFirst("sub")!.Value), targetType, contentId));
 
         if (result.IsFailure)
             return NotFound(result.Error);
@@ -50,6 +51,18 @@ public class LikeController : ControllerBase
     public async Task<ActionResult> DeleteLike(Guid id)
     {
         var result = await _mediator.Send(new DeleteLikeCommand(id, Guid.Parse(User.FindFirst("sub")!.Value)));
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteLikeByContent(DeleteLikeByContendDto command)
+    {
+        var result = await _mediator.Send(new DeleteLikeByContentCommand(Guid.Parse(User.FindFirst("sub")!.Value), command.TargetType, command.ContentId));
 
         if (result.IsFailure)
             return BadRequest(result.Error);

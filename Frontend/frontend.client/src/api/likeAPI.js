@@ -10,8 +10,9 @@ export const likeAPI = {
             body: JSON.stringify({targetType, contentId})
         }),
 
-    delete: (id) =>
-        request(`/Like/${id}`, {
+    delete: (targetType, contentId) =>
+        request('/Like', {
             method: 'DELETE',
+            body: JSON.stringify({targetType, contentId})
         }),
 };

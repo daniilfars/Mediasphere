@@ -62,7 +62,7 @@ app.MapGet("api/feed", async (int? page, int? pageSize, System.Security.Claims.C
     }
 
     return Results.Ok(new FeedDto(
-        response.posts.ConvertAll(p => new PostDto(p.Id, p.AuthorId, p.UserName, p.Content, p.Likes, p.ImageUrl, p.CreatedAt, likes.TryGetValue(p.Id.ToString(), out var isLiked) && isLiked)),
+        response.posts.ConvertAll(p => new PostDto(p.Id, p.AuthorId, p.UserName, p.Content, p.Likes, p.Comments, p.ImageUrl, p.CreatedAt, likes.TryGetValue(p.Id.ToString(), out var isLiked) && isLiked)),
         response.TotalCount, response.Page, response.PageSize
     ));
 });
