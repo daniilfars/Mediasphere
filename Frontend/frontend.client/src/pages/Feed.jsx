@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { postAPI } from '@/api/postAPI';
+import { likeAPI } from '@/api/likeAPI';
 import PostCard from "@/components/post/PostCard";
 import './Feed.css';
 
@@ -12,6 +13,39 @@ export default function Feed() {
     const pageSize = 12;
 
     const sentinelRef = useRef(null);
+
+    const handleLikeToggle = async (postId, currentIsLiked) => {
+        setPosts(prevPosts => prevPosts.map(post => {
+            if (post.id === postId) {
+                return {
+                    ...post,
+                    isLiked: !currentIsLiked,
+                    likes: currentIsLiked ? post.likes - 1 : post.likes + 1
+                };
+            }
+            return post;
+        }));
+
+        try {
+            if (!currentIsLiked) {
+                await likeAPI.create(1, postId);
+            } else {
+                await likeAPI.delete(1, postId);
+            }
+        } catch {
+            setPosts(prevPosts => prevPosts.map(post => {
+                if (post.id === postId) {
+                    return {
+                        ...post,
+                        isLiked: currentIsLiked,
+                        likes: currentIsLiked ? post.likes + 1 : post.likes - 1
+                    };
+                }
+                return post;
+            }));
+        }
+    };
+
 
     useEffect(() => {
         let cancelled = false;
@@ -60,7 +94,7 @@ export default function Feed() {
             <ul className="feed">
                 {posts.map(post => (
                     <li key={post.id} className="feed-item">
-                        <PostCard post={post} />
+                        <PostCard post={post} onLikeToggle={handleLikeToggle} />
                     </li>
                 ))}
             </ul>

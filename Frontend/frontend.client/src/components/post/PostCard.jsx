@@ -1,41 +1,23 @@
 import { formatDistanceToNow, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from "react";
-import { likeAPI} from '../../api/likeAPI';
+import { useAuth } from '../../hooks/useAuth';
 import './PostCard.css';
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, onLikeToggle }) {
   const date = new Date(post.createdAt);
-  const [isLiked, setIsLiked] = useState(post.isLiked);
-  const [likesCount, setLikesCount] = useState(post.likes);
-
-  useEffect(() => {
-    setIsLiked(post.isLiked);
-    setLikesCount(post.likes);
-  }, [post.isLiked, post.likes]);
+  const { isAuthenticated, login } = useAuth();
 
   const handleButtonLike = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const previousIsLiked = isLiked;
-    const previousLikesCount = likesCount;
-
-    setIsLiked(!previousIsLiked);
-    setLikesCount(prev => previousIsLiked ? prev - 1 : prev + 1);
-
-    try {
-        if(!previousIsLiked)
-            await likeAPI.create(1, post.id);
-        else {
-            await likeAPI.delete(1, post.id);
-        }
+    if (!isAuthenticated) {
+        login();
+        return;
     }
-    catch {
-        setIsLiked(previousIsLiked);
-        setLikesCount(previousLikesCount);
-    }
+
+    onLikeToggle(post.id, post.isLiked);
   };
 
   return (
@@ -50,11 +32,11 @@ export default function PostCard({ post }) {
         <footer className="post-card-actions">
             <div className="post-actions-container">
                 <div className="post-actions-item">
-                    <button onClick={handleButtonLike} className={`post-card-like ${isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
+                    <button onClick={handleButtonLike} className={`post-card-like ${post.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
                         <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                         </svg>
-                        <span>{likesCount}</span>
+                        <span>{post.likes}</span>
                     </button>
                 </div>
                 <div className="post-actions-item">
