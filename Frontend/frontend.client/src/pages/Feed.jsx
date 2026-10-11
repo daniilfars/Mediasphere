@@ -46,6 +46,18 @@ export default function Feed() {
         }
     };
 
+    const handlePostDelete = async (postId) => {
+        const previousPosts = posts;
+
+        setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+
+        try {
+            await postAPI.delete(postId);
+        } catch {
+            setPosts(previousPosts);
+            alert("Ошибка удаления поста, попробуйте позже.")
+        }
+    }
 
     useEffect(() => {
         let cancelled = false;
@@ -94,7 +106,7 @@ export default function Feed() {
             <ul className="feed">
                 {posts.map(post => (
                     <li key={post.id} className="feed-item">
-                        <PostCard post={post} onLikeToggle={handleLikeToggle} />
+                        <PostCard post={post} onLikeToggle={handleLikeToggle} onPostDelete={handlePostDelete}/>
                     </li>
                 ))}
             </ul>

@@ -1,12 +1,26 @@
 import { formatDistanceToNow, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
+import {useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import './PostCard.css';
 
-export default function PostCard({ post, onLikeToggle }) {
+export default function PostCard({ post, onLikeToggle, onPostDelete }) {
   const date = new Date(post.createdAt);
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, user, login } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setIsMenuOpen(false);
+        }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleButtonLike = async (e) => {
     e.preventDefault();
@@ -20,10 +34,36 @@ export default function PostCard({ post, onLikeToggle }) {
     onLikeToggle(post.id, post.isLiked);
   };
 
+  const handleDeleteClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (window.confirm('Вы уверены, что хотите удалить этот пост?')) {
+        onPostDelete(post.id);
+        setIsMenuOpen(false);
+    }
+  };
+
   return (
     <article className="post-card">
         <header className="post-card-header">
             <Link to={`/profile/${post.authorId}`}>{post.userName}</Link>
+
+            {isAuthenticated && user?.sub === post.authorId && (
+                <div className="post-card-meatball-container" ref={menuRef}>
+                    <button className="post-card-meatball-trigger" onClick={() => setIsMenuOpen(!isMenuOpen)} type="button" aria-label="Открыть меню действий" >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                    </button>
+                    
+                    {isMenuOpen && (
+                        <div className="post-card-dropdown">
+                            <button className="post-card-dropdown-btn post-card-delete-btn" onClick={handleDeleteClick} type="button" >
+                                Удалить
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
         </header>
         <div className="post-card-body">
             {post.imageUrl && <img src={post.imageUrl} alt="" />}
@@ -56,4 +96,5 @@ export default function PostCard({ post, onLikeToggle }) {
         </footer>
     </article>
   );
+
 }
