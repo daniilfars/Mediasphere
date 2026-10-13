@@ -5,119 +5,139 @@ import PostCard from "@/components/post/PostCard";
 import './Feed.css';
 
 export default function Feed() {
-    const [posts, setPosts] = useState([]);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const pageSize = 12;
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
+  
+  const pageSize = 12;
+  const sentinelRef = useRef(null);
 
-    const sentinelRef = useRef(null);
+  const apiState = useRef({
+    page: 1,
+    isLoading: false,
+    hasMore: true,
+  });
 
-    const handleLikeToggle = async (postId, currentIsLiked) => {
-        setPosts(prevPosts => prevPosts.map(post => {
-            if (post.id === postId) {
-                return {
-                    ...post,
-                    isLiked: !currentIsLiked,
-                    likes: currentIsLiked ? post.likes - 1 : post.likes + 1
-                };
-            }
-            return post;
-        }));
+  const [isLoadingUI, setIsLoadingUI] = useState(false);
+  const [hasMoreUI, setHasMoreUI] = useState(true);
 
-        try {
-            if (!currentIsLiked) {
-                await likeAPI.create(1, postId);
-            } else {
-                await likeAPI.delete(1, postId);
-            }
-        } catch {
-            setPosts(prevPosts => prevPosts.map(post => {
-                if (post.id === postId) {
-                    return {
-                        ...post,
-                        isLiked: currentIsLiked,
-                        likes: currentIsLiked ? post.likes + 1 : post.likes - 1
-                    };
-                }
-                return post;
-            }));
-        }
-    };
+  const loadData = async (targetPage) => {
+    if (apiState.current.isLoading || !apiState.current.hasMore) return;
 
-    const handlePostDelete = async (postId) => {
-        const previousPosts = posts;
+    apiState.current.isLoading = true;
+    setIsLoadingUI(true);
+    setError(null);
 
-        setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-
-        try {
-            await postAPI.delete(postId);
-        } catch {
-            setPosts(previousPosts);
-            alert("Ошибка удаления поста, попробуйте позже.")
-        }
+    try {
+      const data = await postAPI.getAll(targetPage, pageSize);
+      
+      setPosts(prev => targetPage === 1 ? data.posts : [...prev, ...data.posts]);
+      
+      const isMoreAvailable = data.posts.length === pageSize;
+      apiState.current.hasMore = isMoreAvailable;
+      setHasMoreUI(isMoreAvailable);
+      
+      apiState.current.page = targetPage;
+    } catch (err) {
+      setError(err.message || 'Ошибка загрузки');
+    } finally {
+      apiState.current.isLoading = false;
+      setIsLoadingUI(false);
     }
+  };
 
-    useEffect(() => {
-        let cancelled = false;
+  const handleLikeToggle = async (postId, currentIsLiked) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+      if (post.id === postId) {
+        return { 
+          ...post, 
+          isLiked: !currentIsLiked, 
+          likes: currentIsLiked ? post.likes - 1 : post.likes + 1 
+        };
+      }
+      return post;
+    }));
 
-        async function load() {
-            setIsLoading(true);
-            setError(null);
-
-            try {
-                const data = await postAPI.getAll(page, pageSize);
-                if (cancelled) return;
-
-                setPosts(prev => page === 1 ? data.posts : [...prev, ...data.posts]);
-                setHasMore(data.posts.length === pageSize);
-            } catch (err) {
-                if (cancelled) return;
-                setError(err.message || 'Ошибка загрузки');
-            } finally {
-                if (!cancelled) setIsLoading(false);
-            }
+    try {
+      if (!currentIsLiked) {
+        await likeAPI.create(1, postId);
+      } else {
+        await likeAPI.delete(1, postId);
+      }
+    } catch {
+      setPosts(prevPosts => prevPosts.map(post => {
+        if (post.id === postId) {
+          return { 
+            ...post, 
+            isLiked: currentIsLiked, 
+            likes: currentIsLiked ? post.likes + 1 : post.likes - 1 
+          };
         }
+        return post;
+      }));
+    }
+  };
 
-        load();
-        return () => { cancelled = true; };
-    }, [page]);
+  const handlePostDelete = async (postId) => {
+    let deletedPost = null;
 
-    useEffect(() => {
-        const sentinel = sentinelRef.current;
-        if (!sentinel || !hasMore || isLoading) return;
+    setPosts(prevPosts => {
+      deletedPost = prevPosts.find(p => p.id === postId);
+      return prevPosts.filter(post => post.id !== postId);
+    });
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    setPage(p => p + 1);
-                }
-            },
-            { rootMargin: '200px' }
-        );
+    try {
+      await postAPI.delete(postId);
+    } catch {
+      if (deletedPost) {
+        setPosts(prevPosts => [...prevPosts, deletedPost]);
+      }
+      alert("Ошибка удаления поста, попробуйте позже.");
+    }
+  };
 
-        observer.observe(sentinel);
-        return () => observer.disconnect();
-    }, [hasMore, isLoading]);
+  useEffect(() => {
+    loadData(1);
+  }, []);
 
-    return (
-        <div className="container feed-container">
-            <ul className="feed">
-                {posts.map(post => (
-                    <li key={post.id} className="feed-item">
-                        <PostCard post={post} onLikeToggle={handleLikeToggle} onPostDelete={handlePostDelete}/>
-                    </li>
-                ))}
-            </ul>
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
 
-            <div ref={sentinelRef} className="feed-sentinel" />
-
-            {isLoading && <div className="feed-loading">Загрузка...</div>}
-            {error && <div className="feed-error">Ошибка: {error}</div>}
-            {!hasMore && posts.length > 0 && (
-                <div className="feed-end">Постов больше нет</div>
-            )}
-        </div>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !apiState.current.isLoading && apiState.current.hasMore) {
+          const nextPage = apiState.current.page + 1;
+          loadData(nextPage);
+        }
+      },
+      { rootMargin: '200px' }
     );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="container feed-container">
+      <ul className="feed">
+        {posts.map(post => (
+          <li key={post.id} className="feed-item">
+            <PostCard 
+              post={post} 
+              onLikeToggle={handleLikeToggle} 
+              onPostDelete={handlePostDelete}
+            />
+          </li>
+        ))}
+      </ul>
+      
+      <div ref={sentinelRef} className="feed-sentinel" />
+      
+      {isLoadingUI && <div className="feed-loading">Загрузка...</div>}
+      {error && <div className="feed-error">Ошибка: {error}</div>}
+      {!hasMoreUI && posts.length > 0 && (
+        <div className="feed-end">Постов больше нет</div>
+      )}
+    </div>
+  );
 }

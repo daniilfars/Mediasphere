@@ -5,8 +5,8 @@ import Feed from '../pages/Feed';
 export default function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/feed" element={<Feed />} />
+      <Route path="/" element={<Feed />} />
+      <Route path="/home" element={<Home />} />
     </Routes>
   );
 }
