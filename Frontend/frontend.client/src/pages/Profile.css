@@ -1,0 +1,33 @@
+.profile-header {
+    margin-top: 10px;
+}
+
+.profile-header-inner {
+
+}
+
+.profile-header-item {
+
+}
+
+.profile-username {
+
+}
+
+.profile-header-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.profile-header-list-item {
+    
+}
+
+.profile-header-list-link {
+    color: var(--text-h);
+}
+
+.profile-header-list-link span {
+    font-weight: 700;
+}

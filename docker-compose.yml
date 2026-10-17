@@ -179,6 +179,9 @@ services:
       - follow-api
       - like-api
       - comment-api
+    dns_opt:
+      - timeout:1
+      - attempts:1
 
   minio:
     image: minio/minio:latest

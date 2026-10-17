@@ -12,6 +12,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
 
 builder.Services.AddAppSecurity();
 
+builder.Services.AddHealthChecks();
+
 builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
@@ -28,6 +30,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 

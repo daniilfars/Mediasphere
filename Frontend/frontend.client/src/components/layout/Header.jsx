@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import './Header.css';
 
 export default function Header() {
-  const { isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login } = useAuth();
 
   return (
     <header className="header">
@@ -17,7 +17,7 @@ export default function Header() {
         </div>
         <div className="header-container-item">
           {isAuthenticated ? (
-            <Link to="/profile" className="header-link">
+            <Link to={`/profile/${user.sub}`} className="header-link">
               <span className="header-link-text">Профиль</span>
             </Link>
           ) : (
@@ -25,7 +25,6 @@ export default function Header() {
               <span className="header-link-text">Войти</span>
             </button>
           )
-          
           }
         </div>
       </div>

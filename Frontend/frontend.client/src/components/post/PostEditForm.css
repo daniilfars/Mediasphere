@@ -1,0 +1,113 @@
+.post-edit-card {
+    padding: 10px 16px;
+}
+
+.post-edit-header-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-h);
+}
+
+.post-edit-image {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.post-edit-image img {
+    width: 100%;
+    border-radius: var(--radius-md);
+}
+
+.post-edit-image-placeholder {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+}
+
+.post-edit-image-btn {
+    align-self: flex-start;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+}
+
+.post-edit-image-btn:hover:not(:disabled) {
+    background: var(--accent);
+    color: #fff;
+}
+
+.post-edit-image-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.post-edit-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px 12px;
+    font: inherit;
+    color: var(--text-h);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    outline: none;
+}
+
+.post-edit-textarea:focus {
+    border-color: var(--accent);
+}
+
+.post-edit-textarea:disabled {
+    opacity: 0.6;
+}
+
+.post-edit-actions {
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.post-edit-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, opacity 0.15s;
+}
+
+.post-edit-save {
+    background: var(--accent);
+    color: #fff;
+}
+
+.post-edit-save:hover:not(:disabled) { opacity: 0.9; }
+
+.post-edit-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.post-edit-cancel {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.post-edit-cancel:hover:not(:disabled) { background: var(--hover-bg); }
+
+.post-edit-cancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
