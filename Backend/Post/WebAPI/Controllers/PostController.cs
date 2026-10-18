@@ -4,6 +4,7 @@ using Application.Commands.UpdatePost;
 using Application.Commands.UploadPostImage;
 using Application.Queries.GetPostById;
 using Application.Queries.GetPosts;
+using Application.Queries.GetPostsByAuthorId;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,15 @@ public class PostController : ControllerBase
     // GET: api/post
     [HttpGet]
     public async Task<ActionResult<GetPostsResponse>> GetPosts([FromQuery] GetPostsQuery query)
+    {
+        var result = await _mediator.Send(query);
+
+        return Ok(result.Value);
+    }
+
+    // GET: api/post/by-author
+    [HttpGet("by-author")]
+    public async Task<ActionResult<GetPostsByAuthorIdResponse>> GetPostsByAuthorId([FromQuery] GetPostsByAuthorIdQuery query)
     {
         var result = await _mediator.Send(query);
 

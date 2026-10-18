@@ -7,6 +7,9 @@ export const postAPI = {
     getById: (id) => 
         request(`/Post/${id}`),
 
+    getByAuthorId: (authorId, page = 1, pageSize = 10) =>
+        request(`/Post/by-author?authorId=${authorId}&page=${page}&pageSize=${pageSize}`),
+
     create: (content, file) => {
         const formData = new FormData();
         formData.append('content', content)

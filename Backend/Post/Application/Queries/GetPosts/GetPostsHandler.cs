@@ -17,7 +17,7 @@ public sealed class GetPostsHandler : IRequestHandler<GetPostsQuery, Result<GetP
     public async Task<Result<GetPostsResponse>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Posts.AsNoTracking();
-        
+
         var totalCount = await query.CountAsync(cancellationToken);
 
         var posts = await query
