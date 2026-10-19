@@ -3,7 +3,11 @@
 }
 
 .profile-header-inner {
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 20px;
 }
 
 .profile-header-item {
@@ -30,4 +34,8 @@
 
 .profile-header-list-link span {
     font-weight: 700;
+}
+
+.profile-posts-title {
+    text-align: center;
 }

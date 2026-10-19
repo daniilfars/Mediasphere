@@ -2,8 +2,8 @@ import { Link, useParams } from 'react-router-dom';
 import { userAPI } from '../api/userAPI';
 import { followAPI } from '../api/followAPI';
 import { postAPI } from '../api/postAPI';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { usePostFeed } from "@/hooks/usePostFeed";
+import { likeAPI } from '../api/likeAPI';
+import { useState, useEffect, useRef } from 'react';
 import PostCard from "@/components/post/PostCard";
 import './Profile.css';
 
@@ -19,13 +19,90 @@ export default function Profile() {
 
   const { id } = useParams();
 
-  const fetchUserPosts = useCallback((page, pageSize) => {
-    return postAPI.getByAuthorId(id, page, pageSize); 
-  }, [id]);
-
-  const {posts, isLoading: isPostsLoading, error: postsError, hasMore, handleLikeToggle, handlePostDelete, loadNextPage} = usePostFeed(fetchUserPosts);
-
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const pageSize = 12;
   const sentinelRef = useRef(null);
+
+  const handleLikeToggle = async (postId, currentIsLiked) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+      if (post.id === postId) {
+          return {
+              ...post,
+              isLiked: !currentIsLiked,
+              likes: currentIsLiked ? post.likes - 1 : post.likes + 1
+          };
+      }
+      return post;
+    }));
+    try {
+      if (!currentIsLiked) {
+          await likeAPI.create(1, postId);
+      } else {
+          await likeAPI.delete(1, postId);
+      }
+    } catch {
+      setPosts(prevPosts => prevPosts.map(post => {
+          if (post.id === postId) {
+              return {
+                  ...post,
+                  isLiked: currentIsLiked,
+                  likes: currentIsLiked ? post.likes + 1 : post.likes - 1
+              };
+          }
+          return post;
+      }));
+    }
+  };
+  const handlePostDelete = async (postId) => {
+    const previousPosts = posts;
+    setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+    try {
+      await postAPI.delete(postId);
+    } catch {
+      setPosts(previousPosts);
+      alert("Ошибка удаления поста, попробуйте позже.")
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await postAPI.getByAuthorId(id, page, pageSize);
+        if (cancelled) return;
+        setPosts(prev => page === 1 ? data.posts : [...prev, ...data.posts]);
+        setHasMore(data.posts.length === pageSize);
+      } catch (err) {
+        if (cancelled) return;
+        setError(err.message || 'Ошибка загрузки');
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [page, id]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore || isLoading) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage(p => p + 1);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, isUserLoading]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -61,23 +138,6 @@ export default function Profile() {
     };
     loadProfile();
   }, [id]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMore || isPostsLoading) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadNextPage();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasMore, isPostsLoading, loadNextPage]);
 
   if (isUserLoading) return <div className="container">Загрузка профиля</div>;
   if (!user) return <div className="container">Пользователь не найден</div>;
@@ -128,15 +188,14 @@ export default function Profile() {
         </ul>
 
         <div ref={sentinelRef} className="feed-sentinel" />
-
-        {isPostsLoading && <div className="feed-loading">Загрузка постов...</div>}
-        {postsError && <div className="feed-error">Ошибка: {postsError}</div>}
-        {!hasMore && posts.length > 0 && (
-          <div className="feed-end">Постов больше нет</div>
-        )}
-        {!isPostsLoading && posts.length === 0 && (
+          {isLoading && <div className="feed-loading">Загрузка...</div>}
+          {error && <div className="feed-error">Ошибка: {error}</div>}
+          {!hasMore && posts.length > 0 && (
+              <div className="feed-end">Постов больше нет</div>
+          )}
+          {!isLoading && posts.length === 0 && (
           <div className="feed-empty">У пользователя пока нет публикаций</div>
-        )}
+          )}
       </main>
     </div>
   );

@@ -70,7 +70,7 @@ app.MapGet("api/feed", async (int? page, int? pageSize, System.Security.Claims.C
 app.MapGet("api/profile-feed", async (Guid authorId, int? page, int? pageSize, System.Security.Claims.ClaimsPrincipal user, IHttpClientFactory httpClientFactory, LikeService.LikeServiceClient likeClient, ILogger<Program> logger) =>
 {
     var httpClient = httpClientFactory.CreateClient();
-    var response = await httpClient.GetFromJsonAsync<GetPostsResponse>($"http://post-api:8080/api/post/by-author?authorId={authorId}&?Page={page ?? 1}&PageSize={pageSize ?? 10}");
+    var response = await httpClient.GetFromJsonAsync<GetPostsResponse>($"http://post-api:8080/api/post/by-author?authorId={authorId}&Page={page ?? 1}&PageSize={pageSize ?? 10}");
     if (response is null)
         return Results.NoContent();
 
