@@ -15,15 +15,11 @@ public class CommentOnPostConsumer : IConsumer<CommentOnPost>
 
     public async Task Consume(ConsumeContext<CommentOnPost> context)
     {
-        var post = await _db.Posts.FirstOrDefaultAsync(p => p.Id == context.Message.PostId, context.CancellationToken);
-        if (post is null)
-        {
+        var updated = await _db.Posts
+            .Where(p => p.Id == context.Message.PostId)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Comments, p => p.Comments + 1), context.CancellationToken);
+
+        if (updated == 0)
             await context.Publish<CommentedPostNotFound>(new { CommentId = context.Message.CommentId }, context.CancellationToken);
-            return;
-        }
-
-        post.AddComment();
-
-        await _db.SaveChangesAsync(context.CancellationToken);
     }
 }

@@ -50,24 +50,4 @@ public class Post
 
         return Result.Success();
     }
-
-    public void AddLike()
-    {
-        Likes++;
-    }
-
-    public void DeleteLike()
-    {
-        Likes--;
-    }
-
-    public void AddComment()
-    {
-        Comments++;
-    }
-
-    public void DeleteComment()
-    {
-        Comments--;
-    }
 }

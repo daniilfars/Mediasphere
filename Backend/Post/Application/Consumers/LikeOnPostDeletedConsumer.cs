@@ -16,11 +16,8 @@ public class LikeOnPostDeletedConsumer : IConsumer<LikeOnPostDeleted>
 
     public async Task Consume(ConsumeContext<LikeOnPostDeleted> context)
     {
-        var post = await _db.Posts.FirstOrDefaultAsync(p => p.Id == context.Message.PostId, context.CancellationToken);
-        if (post is null) return;
-
-        post.DeleteLike();
-
-        await _db.SaveChangesAsync(context.CancellationToken);
+        await _db.Posts
+            .Where(p => p.Id == context.Message.PostId && p.Likes > 0)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Likes, p => p.Likes - 1), context.CancellationToken);
     }
 }

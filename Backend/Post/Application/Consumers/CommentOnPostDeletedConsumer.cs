@@ -16,11 +16,8 @@ public class CommentOnPostDeletedConsumer : IConsumer<CommentOnPostDeleted>
 
     public async Task Consume(ConsumeContext<CommentOnPostDeleted> context)
     {
-        var post = await _db.Posts.FirstOrDefaultAsync(p => p.Id == context.Message.PostId, context.CancellationToken);
-        if (post is null)
-            return;
-
-        post.DeleteComment();
-        await _db.SaveChangesAsync(context.CancellationToken);
+        await _db.Posts
+            .Where(p => p.Id == context.Message.PostId && p.Comments > 0)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Comments, p => p.Comments - 1), context.CancellationToken);
     }
 }
