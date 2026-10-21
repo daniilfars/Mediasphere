@@ -12,9 +12,8 @@ export const followAPI = {
             method: 'POST',
         }),
 
-    delete: (followerId, followingId) =>
-        request('/Follow', {
+    delete: (followingId) =>
+        request(`/Follow/${followingId}`, {
             method: 'DELETE',
-            body: JSON.stringify({followerId, followingId})
         }),
 };

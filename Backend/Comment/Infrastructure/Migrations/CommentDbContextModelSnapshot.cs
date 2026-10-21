@@ -33,7 +33,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(16384)
+                        .HasColumnType("character varying(16384)");
 
                     b.Property<long>("Likes")
                         .HasColumnType("bigint");

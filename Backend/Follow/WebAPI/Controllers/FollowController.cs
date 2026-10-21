@@ -53,12 +53,12 @@ public class FollowController : ControllerBase
         return Ok(result.Value);
     }
 
-    // DELETE: api/follow
+    // DELETE: api/follow/{followingId}
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteFollow(DeleteFollowCommand command)
+    [HttpDelete("{followingId}")]
+    public async Task<IActionResult> DeleteFollow(Guid followingId)
     {
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(new DeleteFollowCommand(Guid.Parse(User.FindFirst("sub")!.Value), followingId));
         if(result.IsFailure)
             return NotFound(result.Error);
 

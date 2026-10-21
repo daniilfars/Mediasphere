@@ -170,7 +170,7 @@ export default function Profile() {
     if (!isSubscribed) {
       await followAPI.create(profile.userId); 
     } else {
-      await followAPI.delete(user.sub, profile.userId); 
+      await followAPI.delete(profile.userId); 
     }
   } catch {
     setFollowers(previousFollowers);
