@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain;
+using Infrastructure.Configurations;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,7 @@ public class CommentDbContext : DbContext, ICommentDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        //builder.ApplyConfiguration(new CommentConfiguration());
+        builder.ApplyConfiguration(new CommentConfiguration());
         builder.AddTransactionalOutboxEntities();
     }
 }
