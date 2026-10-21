@@ -3,6 +3,7 @@ using Domain;
 using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Shared.Contracts;
 using Shared.Domain;
 
@@ -21,10 +22,7 @@ public sealed class CreateLikeHandler : IRequestHandler<CreateLikeCommand, Resul
 
     public async Task<Result<CreateLikeResponse>> Handle(CreateLikeCommand request, CancellationToken cancellationToken)
     {
-        var existLike = await _context.Likes.AsNoTracking()
-            .Where(l => l.UserId == request.UserId && l.TargetType == request.TargetType && l.ContentId == request.ContentId)
-            .Select(l => new CreateLikeResponse(l.Id, l.UserId, l.TargetType, l.ContentId))
-            .FirstOrDefaultAsync(cancellationToken);
+        var existLike = await FindExistingAsync(request, cancellationToken);
 
         if(existLike is not null)
             return Result<CreateLikeResponse>.Success(existLike);
@@ -42,8 +40,25 @@ public sealed class CreateLikeHandler : IRequestHandler<CreateLikeCommand, Resul
         if (like.TargetType == LikeTargetType.Comment)
             await _publishEndpoint.Publish<LikeOnComment>(new { LikeId = like.Id, CommentId = like.ContentId }, cancellationToken);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            var concurrent = await FindExistingAsync(request, cancellationToken);
+            if (concurrent is not null)
+                return Result<CreateLikeResponse>.Success(concurrent);
+
+            throw;
+        }
 
         return Result<CreateLikeResponse>.Success(new CreateLikeResponse(like.Id, like.UserId, like.TargetType, like.ContentId));
     }
+
+    private Task<CreateLikeResponse?> FindExistingAsync(CreateLikeCommand request, CancellationToken cancellationToken) =>
+        _context.Likes.AsNoTracking()
+            .Where(l => l.UserId == request.UserId && l.TargetType == request.TargetType && l.ContentId == request.ContentId)
+            .Select(l => new CreateLikeResponse(l.Id, l.UserId, l.TargetType, l.ContentId))
+            .FirstOrDefaultAsync(cancellationToken);
 }

@@ -40,6 +40,11 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TargetType", "ContentId");
+
+                    b.HasIndex("UserId", "TargetType", "ContentId")
+                        .IsUnique();
+
                     b.ToTable("Likes");
                 });
 

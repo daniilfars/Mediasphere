@@ -2,6 +2,7 @@
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Shared.Domain;
 
 namespace Application.Commands.CreateFollow;
@@ -17,12 +18,9 @@ public sealed class CreateFollowHandler : IRequestHandler<CreateFollowCommand, R
 
     public async Task<Result<CreateFollowResponse>> Handle(CreateFollowCommand request, CancellationToken cancellationToken)
     {
-        var existFollow = await _context.Follows.AsNoTracking()
-            .Where(f => f.FollowerId == request.FollowerId && f.FollowingId == request.FollowingId)
-            .Select(f => new CreateFollowResponse(f.FollowerId, f.FollowingId))
-            .FirstOrDefaultAsync(cancellationToken);
+        var existFollow = await FindExistsAsync(request, cancellationToken);
 
-        if(existFollow is not null)
+        if (existFollow is not null)
             return Result<CreateFollowResponse>.Success(existFollow);
 
         var result = Follow.Create(request.FollowerId, request.FollowingId);
@@ -32,8 +30,26 @@ public sealed class CreateFollowHandler : IRequestHandler<CreateFollowCommand, R
         var follow = result.Value!;
 
         _context.Follows.Add(follow);
-        await _context.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch(DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        {
+            var concurrent = await FindExistsAsync(request, cancellationToken);
+            if (concurrent is not null)
+                return Result<CreateFollowResponse>.Success(concurrent);
+
+            throw;
+        }
 
         return Result<CreateFollowResponse>.Success(new CreateFollowResponse(follow.FollowerId, follow.FollowingId));
     }
+
+    private Task<CreateFollowResponse?> FindExistsAsync(CreateFollowCommand request, CancellationToken cancellationToken) =>
+        _context.Follows.AsNoTracking()
+            .Where(f => f.FollowerId == request.FollowerId && f.FollowingId == request.FollowingId)
+            .Select(f => new CreateFollowResponse(f.FollowerId, f.FollowingId))
+            .FirstOrDefaultAsync(cancellationToken);
 }

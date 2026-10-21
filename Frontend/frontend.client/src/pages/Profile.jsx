@@ -3,16 +3,20 @@ import { userAPI } from '../api/userAPI';
 import { followAPI } from '../api/followAPI';
 import { postAPI } from '../api/postAPI';
 import { likeAPI } from '../api/likeAPI';
+import { useAuth } from '../hooks/useAuth';
 import { useState, useEffect, useRef } from 'react';
 import PostCard from "@/components/post/PostCard";
 import './Profile.css';
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
+
+  const [profile, setProfile] = useState(null);
   const [followers, setFollowers] = useState(null);
   const [followings, setFollowings] = useState(null);
+  const isSubscribed = Boolean(followers?.followers?.some(f => f.followerId === user?.sub));
 
-  const [isUserLoading, setIsUserLoading] = useState(true);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isFollowersLoading, setIsFollowersLoading] = useState(true);
   const [isFollowingsLoading, setIsFollowingsLoading] = useState(true);
   const [followError, setIsfollowError] = useState(false);
@@ -102,17 +106,17 @@ export default function Profile() {
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, isLoading, isUserLoading]);
+  }, [hasMore, isLoading, isProfileLoading]);
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const userData = await userAPI.getById(id);
-        setUser(userData);
+        const profileData = await userAPI.getById(id);
+        setProfile(profileData);
 
-        if (userData && userData.userId) {
+        if (profileData && profileData.userId) {
           try {
-            const followersData = await followAPI.getFollowers(userData.userId);
+            const followersData = await followAPI.getFollowers(profileData.userId);
             setFollowers(followersData);
           } catch {
             setIsfollowError(true);
@@ -121,7 +125,7 @@ export default function Profile() {
           }
 
           try {
-            const followingsData = await followAPI.getFollowings(userData.userId);
+            const followingsData = await followAPI.getFollowings(profileData.userId);
             setFollowings(followingsData);
           } catch {
             setIsfollowError(true);
@@ -133,28 +137,64 @@ export default function Profile() {
           setIsFollowingsLoading(false);
         }
       } catch { } finally {
-        setIsUserLoading(false);
+        setIsProfileLoading(false);
       }
     };
     loadProfile();
   }, [id]);
 
-  if (isUserLoading) return <div className="container">Загрузка профиля</div>;
-  if (!user) return <div className="container">Пользователь не найден</div>;
+  const handleSubscribeClick = async () => {
+  if (!user) return;
+
+  const previousFollowers = followers;
+
+  setFollowers(prev => {
+    if (!prev) return prev;
+    
+    if (isSubscribed) {
+      return {
+        ...prev,
+        totalCount: Math.max(0, prev.totalCount - 1),
+        followers: prev.followers.filter(f => f.followerId !== user.sub)
+      };
+    } else {
+      return {
+        ...prev,
+        totalCount: prev.totalCount + 1,
+        followers: [...prev.followers, { followerId: user.sub }]
+      };
+    }
+  });
+
+  try {
+    if (!isSubscribed) {
+      await followAPI.create(profile.userId); 
+    } else {
+      await followAPI.delete(user.sub, profile.userId); 
+    }
+  } catch {
+    setFollowers(previousFollowers);
+    alert("Не удалось изменить статус подписки. Попробуйте позже.");
+  }
+  };
+
+  if (isProfileLoading) return <div className="container">Загрузка профиля</div>;
+  if (!profile) return <div className="container">Пользователь не найден</div>;
 
   return (
     <div className="profile-page">
       <header className="container profile-header">
         <div className="container profile-header-inner">
           <div className="profile-header-item">
-            <h1 className="profile-username">{user.userName}</h1>
+            <h1 className="profile-profilename">{profile.userName}</h1>
           </div>
           <div className="profile-header-item">
-            {isFollowersLoading && isFollowingsLoading ? (
+            {isFollowersLoading || isFollowingsLoading ? (
               <span>Загрузка</span>
             ) : followError ? (
               <span style={{ color: 'red' }}>Сервис подписок недоступен</span>
             ) : (
+              <>
               <ul className="profile-header-list">
                 <li className="profile-header-list-item">
                   <Link to={`/followers/${id}`} className="profile-header-list-link">
@@ -167,6 +207,11 @@ export default function Profile() {
                   </Link>
                 </li>
               </ul>
+              {user && user.sub !== profile.userId &&
+                (<button onClick={handleSubscribeClick} className="subscribe-button">
+                {isSubscribed ? "Отписаться" : "Подписаться"}
+                </button>)}
+              </>
             )}
           </div>
         </div>
