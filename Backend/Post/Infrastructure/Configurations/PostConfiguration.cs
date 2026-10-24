@@ -12,5 +12,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(p => p.UserName).IsRequired();
         builder.Property(p => p.Content).HasMaxLength(16384).IsRequired();
         builder.Property(p => p.Likes).IsRequired();
+
+        builder.HasIndex(p => new { p.AuthorId, p.Id });
     }
 }

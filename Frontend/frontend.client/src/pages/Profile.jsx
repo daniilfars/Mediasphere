@@ -144,38 +144,38 @@ export default function Profile() {
   }, [id]);
 
   const handleSubscribeClick = async () => {
-  if (!user) return;
+    if (!user) return;
 
-  const previousFollowers = followers;
+    const previousFollowers = followers;
 
-  setFollowers(prev => {
-    if (!prev) return prev;
-    
-    if (isSubscribed) {
-      return {
-        ...prev,
-        totalCount: Math.max(0, prev.totalCount - 1),
-        followers: prev.followers.filter(f => f.followerId !== user.sub)
-      };
-    } else {
-      return {
-        ...prev,
-        totalCount: prev.totalCount + 1,
-        followers: [...prev.followers, { followerId: user.sub }]
-      };
+    setFollowers(prev => {
+      if (!prev) return prev;
+
+      if (isSubscribed) {
+        return {
+          ...prev,
+          totalCount: Math.max(0, prev.totalCount - 1),
+          followers: prev.followers.filter(f => f.followerId !== user.sub)
+        };
+      } else {
+        return {
+          ...prev,
+          totalCount: prev.totalCount + 1,
+          followers: [...prev.followers, { followerId: user.sub }]
+        };
+      }
+    });
+
+    try {
+      if (!isSubscribed) {
+        await followAPI.create(profile.userId); 
+      } else {
+        await followAPI.delete(profile.userId); 
+      }
+    } catch {
+      setFollowers(previousFollowers);
+      alert("Не удалось изменить статус подписки. Попробуйте позже.");
     }
-  });
-
-  try {
-    if (!isSubscribed) {
-      await followAPI.create(profile.userId); 
-    } else {
-      await followAPI.delete(profile.userId); 
-    }
-  } catch {
-    setFollowers(previousFollowers);
-    alert("Не удалось изменить статус подписки. Попробуйте позже.");
-  }
   };
 
   if (isProfileLoading) return <div className="container">Загрузка профиля</div>;

@@ -51,6 +51,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorId", "Id");
+
                     b.ToTable("Posts");
                 });
 

@@ -25,7 +25,7 @@ public sealed class DeletePostHandler : IRequestHandler<DeletePostCommand, Resul
 
     public async Task<Result> Handle(DeletePostCommand request, CancellationToken cancellationToken)
     {
-        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == request.Id);
+        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
         if (post is null)
             return Result.Failure("Пост не найден");
 

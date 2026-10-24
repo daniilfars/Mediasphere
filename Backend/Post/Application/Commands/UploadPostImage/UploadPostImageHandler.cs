@@ -34,7 +34,7 @@ public sealed class UploadPostImageHandler : IRequestHandler<UploadPostImageComm
         if (extension is null)
             return Result<UploadPostImageResponse>.Failure("Неподдерживаемый формат изображения");
 
-        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == request.Id);
+        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
         if (post is null)
             return Result<UploadPostImageResponse>.Failure("Пост не найден");
 
