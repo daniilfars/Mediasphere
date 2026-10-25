@@ -60,6 +60,7 @@ export default function PostCard({ post, onLikeToggle, onPostDelete }) {
                             <button className="post-card-dropdown-btn post-card-delete-btn" onClick={handleDeleteClick} type="button" >
                                 Удалить
                             </button>
+                            <Link to={`/post/${post.id}/edit`} state={{post}}>Редактировать</Link>
                         </div>
                     )}
                 </div>
