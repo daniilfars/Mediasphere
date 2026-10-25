@@ -33,7 +33,6 @@ public class CommentController : ControllerBase
             return BadRequest(result.Error);
 
         return Ok(result.Value);
-        //return CreatedAtAction(nameof(GetCommentById), new { id = result.Value!.Id }, result.Value);
     }
 
     // GET: api/comment?PostId=&Page=1&PageSize=10
