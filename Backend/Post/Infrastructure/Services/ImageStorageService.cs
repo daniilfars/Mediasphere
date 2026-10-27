@@ -8,13 +8,11 @@ public class ImageStorageService : IImageStorageService
 {
     private readonly IMinioClient _minio;
     private readonly string _bucketName;
-    private readonly string _endpoint;
 
-    public ImageStorageService(IMinioClient minio, string bucketName, string endpoint)
+    public ImageStorageService(IMinioClient minio, string bucketName)
     {
         _minio = minio;
         _bucketName = bucketName;
-        _endpoint = endpoint;
     }
 
     public async Task DeleteAsync(string objectName, CancellationToken cancellationToken = default)

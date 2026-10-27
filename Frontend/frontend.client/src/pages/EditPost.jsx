@@ -13,11 +13,30 @@ export default function EditPost() {
     const [post, setPost] = useState(location.state?.post || null);
     const [loading, setLoading] = useState(!location.state?.post);
     const [error, setError] = useState(null);
+    const [previewImageUrl, setPreviewImageUrl] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const navigate = useNavigate();
 
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            setPreviewImageUrl(URL.createObjectURL(file));
+        }
+    };
+
     useEffect(() => {
-        if (post) return;
+        if (post) {
+            setPreviewImageUrl(post.imageUrl || null);
+        }
+    }, [post]);
+
+    useEffect(() => {
+        if (post) {
+            reset({ content: post.content ?? ""});
+            return;
+        }
 
         const loadPost = async () => {
             try {
@@ -31,17 +50,26 @@ export default function EditPost() {
         }
 
         loadPost();
-    }, [id, post]);
-
-    useEffect(() => {
-        if (!post) return;
-        reset({ content: post.content ?? "" });
-    }, [post, reset]);
+    }, [id, reset]);
 
     const onSubmit = async (data) => {
         try {
-            const updated = await postAPI.update(id, data.content);
+            let updated = { ...post };
+
+            if(formState.dirtyFields.content) {
+                const res = await postAPI.update(id, data.content);
+                if (res)
+                    updated = res;
+            }
+
+            if(selectedFile) {
+                const res = await postAPI.uploadImage(id, selectedFile);
+                if (res)
+                    updated = res;
+            }
+
             setPost(updated);
+            setSelectedFile(null);
 
             navigate(location.pathname, {
                 replace: true,
@@ -49,10 +77,9 @@ export default function EditPost() {
             });
 
             reset({ content: updated.content });
-            
             alert("Сохранено");
-        } catch(e) {
-            alert(e.message);
+        } catch {
+            alert("Не удалось сохранить");
         }
     }
 
@@ -63,8 +90,12 @@ export default function EditPost() {
     return (
         <div className="container">
             <form onSubmit={handleSubmit(onSubmit)}>
-                <input {...register("content")}/>
-                <button type="submit" disabled={!formState.isDirty}>Сохранить</button>
+                <div>
+                    <input {...register("content")}/>
+                    {previewImageUrl && <img src={previewImageUrl} alt="Картинка поста" />}
+                    <input type="file" accept="image/jpeg, image/png, image/webp" onChange={handleFileChange}/>
+                    <button type="submit" disabled={!formState.isDirty && !selectedFile}>Сохранить</button>
+                </div>
             </form>
         </div>
     );

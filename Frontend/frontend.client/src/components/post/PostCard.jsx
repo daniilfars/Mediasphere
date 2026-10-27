@@ -67,7 +67,7 @@ export default function PostCard({ post, onLikeToggle, onPostDelete }) {
             )}
         </header>
         <div className="post-card-body">
-            {post.imageUrl && <img src={post.imageUrl} alt="" />}
+            {post.imageUrl && <img src={post.imageUrl} alt="Картинка поста" />}
             <p className="post-card-content">{post.content}</p>
         </div>
         <footer className="post-card-actions">
