@@ -47,7 +47,7 @@ export default function PostCard({ post, onLikeToggle, onPostDelete }) {
   return (
     <article className="post-card">
         <header className="post-card-header">
-            <Link to={`/profile/${post.authorId}`}>{post.userName}</Link>
+            <Link className="post-card-link" to={`/profile/${post.authorId}`}>{post.userName}</Link>
 
             {isAuthenticated && user?.sub === post.authorId && (
                 <div className="post-card-meatball-container" ref={menuRef}>
@@ -60,7 +60,7 @@ export default function PostCard({ post, onLikeToggle, onPostDelete }) {
                             <button className="post-card-dropdown-btn post-card-delete-btn" onClick={handleDeleteClick} type="button" >
                                 Удалить
                             </button>
-                            <Link to={`/post/${post.id}/edit`} state={{post}}>Редактировать</Link>
+                            <Link className="post-card-dropdown-btn" to={`/post/${post.id}/edit`} state={{post}}>Редактировать</Link>
                         </div>
                     )}
                 </div>
