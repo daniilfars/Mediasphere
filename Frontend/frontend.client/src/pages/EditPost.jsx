@@ -20,7 +20,15 @@ export default function EditPost() {
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Размер файла не должен превышать 5 мб");
+            e.target.value = "";
+            return;
+        }
         if (file) {
+            if (previewImageUrl && previewImageUrl !== post.imageUrl)
+                URL.revokeObjectURL(previewImageUrl);
+
             setSelectedFile(file);
             setPreviewImageUrl(URL.createObjectURL(file));
         }
