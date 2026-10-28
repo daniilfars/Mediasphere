@@ -219,6 +219,9 @@ export default function Profile() {
 
       <main className="container feed-container">
         <h2 className="profile-posts-title">Публикации</h2>
+        {user && user.sub === profile.userId && 
+        <Link className="profile-create-post-link" to="/post/create">Создать пост</Link>
+        }
         
         <ul className="feed">
           {posts.map(post => (
