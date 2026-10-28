@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { postAPI } from "../api/postAPI";
 import { useForm } from "react-hook-form";
+import "./EditPost.css";
 
 export default function EditPost() {
     const { register, handleSubmit, reset, formState } = useForm();
@@ -96,14 +97,12 @@ export default function EditPost() {
     if(!post) return <div className="container">Пост не найден</div>
 
     return (
-        <div className="container">
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <input {...register("content")}/>
-                    {previewImageUrl && <img src={previewImageUrl} alt="Картинка поста" />}
-                    <input type="file" accept="image/jpeg, image/png, image/webp" onChange={handleFileChange}/>
-                    <button type="submit" disabled={!formState.isDirty && !selectedFile}>Сохранить</button>
-                </div>
+        <div className="container editpost-container">
+            <form className="editpost-form" onSubmit={handleSubmit(onSubmit)}>
+                <input {...register("content")}/>
+                {previewImageUrl && <img src={previewImageUrl} alt="Картинка поста" />}
+                <input type="file" accept="image/jpeg, image/png, image/webp" onChange={handleFileChange}/>
+                <button type="submit" disabled={!formState.isDirty && !selectedFile}>Сохранить</button>
             </form>
         </div>
     );
