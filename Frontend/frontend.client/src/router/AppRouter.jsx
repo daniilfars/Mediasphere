@@ -12,7 +12,7 @@ export default function AppRouter() {
       <Route path="/profile/:id" element={<Profile />} />
       <Route path="/post/:id/edit" element={<EditPost />} />
       <Route path="/post/create" element={<CreatePost />} />
-      <Route path="/followers/:id" element={<Followers />} />
+      <Route path="/followers/:userName/:id" element={<Followers />} />
     </Routes>
   );
 }

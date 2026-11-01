@@ -7,8 +7,8 @@ export const followAPI = {
     getFollowings: (userId, page = 1, pageSize = 10) =>
         request(`/Follow/followings?UserId=${userId}&Page=${page}&PageSize=${pageSize}`),
 
-    create: (followingId) =>
-        request(`/Follow/${followingId}`, {
+    create: (followingUserName, followingId) =>
+        request(`/Follow/${followingUserName}/${followingId}`, {
             method: 'POST',
         }),
 

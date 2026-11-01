@@ -5,7 +5,7 @@ import "./follow.css";
 
 
 export default function Followers() {
-    const { id } = useParams();
+    const { userName, id } = useParams();
 
     const [followers, setFollowers] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -62,13 +62,13 @@ export default function Followers() {
 
     return (
         <div className="container follow-container">
-            {/*<p className="follow-name">{}</p>*/}
+            <p className="follow-name">{userName}</p>
             <p className="follow-count">Количество подписчиков: {totalCount}</p>
             <ul className="follow-list">
                 {followers.map(follower => (
                 <li key={follower.followerId}>
                     <Link to={`/profile/${follower.followerId}`}>
-                    {follower.followerId}
+                    {follower.followerUserName}
                     </Link>
                 </li>
                 ))}
@@ -78,9 +78,6 @@ export default function Followers() {
 
             {isLoading && <div className="follow-loading">Загрузка...</div>}
             {error && <div className="follow-error">Ошибка: {error}</div>}
-            {!hasMore && followers.length > 0 && (
-                <div className="follow-end">Подписчиков больше нет</div>
-            )}
         </div>
     );
 }

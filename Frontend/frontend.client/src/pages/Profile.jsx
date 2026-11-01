@@ -168,7 +168,7 @@ export default function Profile() {
 
     try {
       if (!isSubscribed) {
-        await followAPI.create(profile.userId); 
+        await followAPI.create(profile.userName, profile.userId); 
       } else {
         await followAPI.delete(profile.userId); 
       }
@@ -197,12 +197,12 @@ export default function Profile() {
               <>
               <ul className="profile-header-list">
                 <li className="profile-header-list-item">
-                  <Link to={`/followers/${id}`} className="profile-header-list-link">
+                  <Link to={`/followers/${profile.userName}/${id}`} className="profile-header-list-link">
                     <span>{followers.totalCount}</span> подписчиков
                   </Link>
                 </li>
                 <li className="profile-header-list-item">
-                  <Link to={`/followings/${id}`} className="profile-header-list-link">
+                  <Link to={`/followings/${profile.userName}/${id}`} className="profile-header-list-link">
                     <span>{followings.totalCount}</span> подписок
                   </Link>
                 </li>
