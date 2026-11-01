@@ -10,5 +10,7 @@ public class FollowConfiguration : IEntityTypeConfiguration<Follow>
     {
         builder.HasKey(f => new { f.FollowerId, f.FollowingId });
         builder.HasIndex(f => new { f.FollowingId, f.FollowerId });
+        builder.Property(f => f.FollowerUserName).IsRequired();
+        builder.Property(f => f.FollowingUserName).IsRequired();
     }
 }

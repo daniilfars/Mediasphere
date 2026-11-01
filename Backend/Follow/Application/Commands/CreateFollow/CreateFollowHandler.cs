@@ -23,7 +23,7 @@ public sealed class CreateFollowHandler : IRequestHandler<CreateFollowCommand, R
         if (existFollow is not null)
             return Result<CreateFollowResponse>.Success(existFollow);
 
-        var result = Follow.Create(request.FollowerId, request.FollowingId);
+        var result = Follow.Create(request.FollowerId, request.FollowingId, request.FollowerUserName, request.FollowingUserName);
         if (result.IsFailure)
             return Result<CreateFollowResponse>.Failure(result.Error!);
 

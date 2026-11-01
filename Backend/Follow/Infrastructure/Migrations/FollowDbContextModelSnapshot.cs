@@ -33,6 +33,14 @@ namespace Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("FollowerUserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FollowingUserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("FollowerId", "FollowingId");
 
                     b.HasIndex("FollowingId", "FollowerId");

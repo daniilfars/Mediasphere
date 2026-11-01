@@ -25,7 +25,7 @@ public sealed class GetFollowersHandler : IRequestHandler<GetFollowersQuery, Res
             .ThenBy(f => f.FollowerId)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(f => new FollowerDto(f.FollowerId))
+            .Select(f => new FollowerDto(f.FollowerId, f.FollowerUserName))
             .ToListAsync(cancellationToken);
 
         return Result<GetFollowersResponse>.Success(new GetFollowersResponse(followers, request.UserId, totalCount, request.Page, request.PageSize));

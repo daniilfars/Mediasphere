@@ -21,28 +21,41 @@ public sealed class CreatePostHandler : IRequestHandler<CreatePostCommand, Resul
 
     public async Task<Result<CreatePostResponse>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
-        var extension = request.ContentType switch
-        {
-            "image/jpeg" => ".jpg",
-            "image/png" => ".png",
-            "image/webp" => ".webp",
-            _ => null
-        };
+        var hasFile = request.FileStream is not null;
 
-        if (extension is null)
-            return Result<CreatePostResponse>.Failure("Неподдерживаемый формат изображения");
+        string? objectName = null;
+        string? extension = null;
+
+        if (hasFile)
+        {
+            extension = request.ContentType switch
+            {
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                "image/webp" => ".webp",
+                _ => null
+            };
+
+            if (extension is null)
+                return Result<CreatePostResponse>.Failure("Неподдерживаемый формат изображения");
+        }
 
         var result = Post.Create(request.AuthorId, request.UserName, request.Content);
         if (result.IsFailure)
             return Result<CreatePostResponse>.Failure(result.Error!);
 
         var post = result.Value!;
-        var objectName = $"posts/{post.Id}/{Guid.NewGuid()}{extension}";
+
+        if(hasFile)
+            objectName = $"posts/{post.Id}/{Guid.NewGuid()}{extension}";
 
         try
         {
-            var url = await _imageStorageService.UploadAsync(objectName, request.FileStream, request.ContentType, cancellationToken);
-            post.SetImageUrl(url);
+            if (hasFile)
+            {
+                var url = await _imageStorageService.UploadAsync(objectName!, request.FileStream!, request.ContentType!, cancellationToken);
+                post.SetImageUrl(url);
+            }
 
             _context.Posts.Add(post);
             await _context.SaveChangesAsync(cancellationToken);
@@ -51,13 +64,16 @@ public sealed class CreatePostHandler : IRequestHandler<CreatePostCommand, Resul
         }
         catch (Exception ex)
         {
-            try
+            if (hasFile)
             {
-                await _imageStorageService.DeleteAsync(objectName, cancellationToken);
-            }
-            catch (Exception deleteEx)
-            {
-                _logger.LogError(deleteEx, "Не удалось удалить файл {ObjectName}", objectName);
+                try
+                {
+                    await _imageStorageService.DeleteAsync(objectName, cancellationToken);
+                }
+                catch (Exception deleteEx)
+                {
+                    _logger.LogError(deleteEx, "Не удалось удалить файл {ObjectName}", objectName);
+                }
             }
 
             _logger.LogError(ex, "Ошибка создания поста для пользователя {AuthorId}", request.AuthorId);

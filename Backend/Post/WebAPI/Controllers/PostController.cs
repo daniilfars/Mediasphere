@@ -26,22 +26,25 @@ public class PostController : ControllerBase
     // POST: api/post
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<CreatePostResponse>> CreatePost([FromForm]string content, IFormFile file)
+    public async Task<ActionResult<CreatePostResponse>> CreatePost([FromForm]string content, IFormFile? file)
     {
-        if (file is null || file.Length == 0)
-            return BadRequest("Файл не выбран или пустой");
+        if (file is not null)
+        {
+            if (file.Length == 0)
+                return BadRequest("Файл не выбран или пустой");
 
-        if (file.Length > 5 * 1024 * 1024)
-            return BadRequest("Размер файла не должен превышать 5 МБ");
+            if (file.Length > 5 * 1024 * 1024)
+                return BadRequest("Размер файла не должен превышать 5 МБ");
+        }
 
-        await using var stream = file.OpenReadStream();
+        await using var stream = file?.OpenReadStream();
 
         var result = await _mediator.Send(new CreatePostCommand(
-            Guid.Parse(User.FindFirst("sub")!.Value), User.FindFirst("preferred_username")!.Value, content, stream, file.ContentType
+            Guid.Parse(User.FindFirst("sub")!.Value), User.FindFirst("preferred_username")!.Value, content, stream, file?.ContentType
         ));
 
         if (result.IsFailure)
-            return BadRequest(result.Error!);
+            return BadRequest(result.Error);
 
         return CreatedAtAction(nameof(GetPostById), new { id = result.Value!.Id }, result.Value);
     }
@@ -105,7 +108,7 @@ public class PostController : ControllerBase
         var result = await _mediator.Send(new UploadPostImageCommand(id, Guid.Parse(User.FindFirst("sub")!.Value), stream, file.ContentType));
 
         if (result.IsFailure)
-            return BadRequest(result.Error!);
+            return BadRequest(result.Error);
 
         return Ok(result.Value);
     }
@@ -117,7 +120,7 @@ public class PostController : ControllerBase
     {
         var result = await _mediator.Send(new DeletePostCommand(id, Guid.Parse(User.FindFirst("sub")!.Value)));
         if (result.IsFailure)
-            return BadRequest(result.Error!);
+            return BadRequest(result.Error);
 
         return NoContent();
     }

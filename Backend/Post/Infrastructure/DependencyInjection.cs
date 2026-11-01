@@ -64,10 +64,7 @@ public static class DependencyInjection
                 .Build());
 
         services.AddScoped<IImageStorageService>(sp =>
-            new ImageStorageService(
-                sp.GetRequiredService<IMinioClient>(),
-                bucketName,
-                endpoint));
+            new ImageStorageService(sp.GetRequiredService<IMinioClient>(), bucketName));
 
         return services;
     }
