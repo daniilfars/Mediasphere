@@ -21,8 +21,8 @@ public class FollowController : ControllerBase
 
     // POST: api/follow/{followingId}
     [Authorize]
-    [HttpPost("{followingId}")]
-    public async Task<ActionResult> CreateFollow(Guid followingId, string followingUserName)
+    [HttpPost("{followingUserName}/{followingId}")]
+    public async Task<ActionResult> CreateFollow(string followingUserName, Guid followingId)
     {
         var result = await _mediator.Send(new CreateFollowCommand(Guid.Parse(User.FindFirst("sub")!.Value), followingId, User.FindFirst("preferred_username")?.Value!, followingUserName));
         if (result.IsFailure)
