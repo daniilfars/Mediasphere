@@ -1,7 +1,7 @@
 import { followAPI } from "../api/followAPI";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import "./follow.css";
+import "./Follow.css";
 
 
 export default function Followers() {
@@ -62,8 +62,8 @@ export default function Followers() {
 
     return (
         <div className="container follow-container">
-            <p className="follow-name">{userName}</p>
-            <p className="follow-count">Количество подписчиков: {totalCount}</p>
+            <Link to={`/profile/${id}`} className="follow-name">{userName}</Link>
+            <p className="follow-count"><span>{totalCount}</span> подписчиков</p>
             <ul className="follow-list">
                 {followers.map(follower => (
                 <li key={follower.followerId}>

@@ -17,7 +17,7 @@
 }
 
 .profile-username {
-
+    font-weight: 700;
 }
 
 .subscribe-button {
@@ -42,10 +42,6 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-}
-
-.profile-header-list-item {
-    
 }
 
 .profile-header-list-link {

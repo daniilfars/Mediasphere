@@ -1,0 +1,46 @@
+.follow-container {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-h);
+}
+
+.follow-name {
+    font-weight: 700;
+    font-size: 32px;
+}
+
+.follow-count span {
+    font-weight: 700;
+}
+
+.follow-list {
+    max-width: 100%;
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 18px;
+    background-color: var(--element-bg);
+}
+
+.follow-list li {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.follow-loading {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--text);
+}
+
+.follow-error {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--error);
+}

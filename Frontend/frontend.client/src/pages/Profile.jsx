@@ -186,7 +186,7 @@ export default function Profile() {
       <header className="container profile-header">
         <div className="container profile-header-inner">
           <div className="profile-header-item">
-            <h1 className="profile-profilename">{profile.userName}</h1>
+            <h1 className="profile-username">{profile.userName}</h1>
           </div>
           <div className="profile-header-item">
             {isFollowersLoading || isFollowingsLoading ? (
