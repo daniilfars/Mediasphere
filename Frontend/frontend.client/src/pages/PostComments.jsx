@@ -14,7 +14,7 @@ export default function PostComments() {
 
   const date = new Date(post.createdAt);
 
-  const [ comments, setComments ] = useState([]);
+  const [comments, setComments] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,8 +30,10 @@ export default function PostComments() {
       try {
         const data = await commentAPI.get(id, page, pageSize);
         if (cancelled) return;
-        setComments(prev => page === 1 ? data.comments : [...prev, ...data.comments]);
-        setHasMore(data.comments.length === pageSize);
+
+        const newComments = data?.comments || []; 
+        setComments(prev => page === 1 ? newComments : [...prev, ...newComments]);
+        setHasMore(newComments.length === pageSize);
       } catch (err) {
         if (cancelled) return;
         setError(err.message || 'Ошибка загрузки');
@@ -88,9 +90,9 @@ export default function PostComments() {
         <ul className="comments-list">
           {comments.map(comment => (
             <li key={comment.id} className="comments-list-item">
-              <Link to={`/profile/${post.authorId}`} className="comments-authorid">{comment.userName}</Link>
+              <Link to={`/profile/${comment.authorId}`} className="comments-authorid">{comment.userName}</Link>
               <p className="comments-content">{comment.content}</p>
-              <button onClick={handleButtonLike} className={`post-card-btn ${post.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
+              <button onClick={handleButtonLike} className={`post-card-btn ${comment.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
                 <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>

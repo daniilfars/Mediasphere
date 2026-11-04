@@ -19,9 +19,11 @@ public sealed class GetPostCommentsHandler : IRequestHandler<GetPostCommentsQuer
         var query = _context.Comments.AsNoTracking()
             .Where(c => c.PostId == request.PostId);
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken);
 
-        var comments = await query.Skip((request.Page - 1) * request.PageSize)
+        var comments = await query
+            .OrderByDescending(с => с.Id)
+            .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(c => new CommentDto(c.Id, c.AuthorId, c.UserName, c.PostId, c.Content, c.Likes))
             .ToListAsync(cancellationToken);

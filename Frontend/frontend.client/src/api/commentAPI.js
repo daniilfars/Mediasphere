@@ -2,7 +2,7 @@ import { request } from "./client";
 
 export const commentAPI = {
     get: (postId, page = 1, pageSize = 10) =>
-        request(`/Comment?PostId=${postId}&Page=${page}&PageSize=${pageSize}`),
+        request(`/Comments?postId=${postId}&page=${page}&pageSize=${pageSize}`),
 
     create: (postId, content) =>
         request('/Comment', {

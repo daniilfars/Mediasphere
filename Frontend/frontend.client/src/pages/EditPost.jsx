@@ -33,7 +33,7 @@ export default function EditPost() {
             setSelectedFile(file);
             setPreviewImageUrl(URL.createObjectURL(file));
         }
-    };
+    };``
 
     useEffect(() => {
         if (post) {
