@@ -8,7 +8,7 @@ export const postAPI = {
         request(`/Post/${id}`),
 
     getByAuthorId: (authorId, page = 1, pageSize = 10) =>
-        request(`/Profile-feed?authorId=${authorId}&page=${page}&pageSize=${pageSize}`),
+        request(`/Feed?authorId=${authorId}&page=${page}&pageSize=${pageSize}`),
 
     create: (content, file = null) => {
         const formData = new FormData();
