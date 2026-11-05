@@ -12,7 +12,10 @@ export default function PostComments() {
   const { id } = useParams();
   const location = useLocation();
   const post = location.state?.post;
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, user, login } = useAuth();
+
+  const [activeMenuCommentId, setActiveMenuCommentId] = useState(null);
+  const menuRef = useRef(null);
 
   const date = new Date(post.createdAt);
 
@@ -117,6 +120,33 @@ export default function PostComments() {
     }
   }
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setActiveMenuCommentId(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const toogleMenu = (commentId) => {
+    setActiveMenuCommentId(prevId => prevId === commentId ? null : commentId);
+  };
+
+  const handleDeleteClick = async (commentId) => {    
+    if (window.confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+      try {
+        await commentAPI.delete(commentId);
+        setComments(prevComments => prevComments.filter(comment => comment.id != commentId));
+      } catch {
+        alert("Не удалось удалить комментарий");
+      }
+      setActiveMenuCommentId(null);
+    }
+  };
+
   return (
   <div className="container feed">
     <article className="post-card">
@@ -133,11 +163,29 @@ export default function PostComments() {
         </div>
       </div>
       <hr className="comments-hr"/>
-      <section className="post-card-actions">
+      <section className="post-card-actions comments-card-actions">
         <ul className="comments-list">
           {comments.map(comment => (
             <li key={comment.id} className="comments-list-item">
-              <Link to={`/profile/${comment.authorId}`} className="comments-authorid">{comment.userName}</Link>
+              <div className="comment-container">
+                <Link to={`/profile/${comment.authorId}`} className="comments-authorid">{comment.userName}</Link>
+                {isAuthenticated && user?.sub === comment.authorId && (
+                <div className="post-card-meatball-container" ref={menuRef}>
+                  <button className="post-card-meatball-trigger" onClick={() => toogleMenu(comment.id)} type="button" aria-label="Открыть меню действий" >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                  </button>
+                  
+                  {activeMenuCommentId === comment.id && (
+                    <div className="post-card-dropdown">
+                      <button className="post-card-dropdown-btn post-card-delete-btn" onClick={() => handleDeleteClick(comment.id)} type="button" >
+                        Удалить
+                      </button>
+                      {/*<Link className="post-card-dropdown-btn" to={`/post/${post.id}/edit`} state={{post}}>Редактировать</Link>*/}
+                    </div>
+                  )}
+                </div>
+                )}
+              </div>
               <p className="comments-content">{comment.content}</p>
               <button onClick={() => handleButtonLike(comment.id, comment.isLiked)} className={`post-card-btn ${comment.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
                 <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -14,6 +14,39 @@
     background-color: #a3a3a3;
 }
 
+.comments-card-actions {
+    width: 100%;
+}
+
+.comments-list {
+    width: 100%;
+}
+
+.comments-list-item {
+    margin-bottom: 7px;
+}
+
+.comments-list-item .post-card-meatball-container {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+}
+
+.comments-list-item:hover .post-card-meatball-container {
+    opacity: 1;
+    visibility: visible;
+}
+
+.comments-list-item .post-card-meatball-container:focus-within, .comments-list-item:has(.post-card-dropdown) .post-card-meatball-container {
+    opacity: 1;
+    visibility: visible;
+}
+
+.comment-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .comments-authorid {
     color: var(--text-h);
     font-size: 18px;
@@ -22,6 +55,8 @@
 
 .comments-content {
     color: var(--text-h);
+    margin-top: -5px;
+    margin-bottom: 5px;
 }
 
 .comments-footer form {
