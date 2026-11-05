@@ -1,3 +1,57 @@
 .feed {
     background-color: var(--element-bg);
 }
+
+.comments-post-date-container {
+    display: flex;
+    justify-content: end;
+}
+
+.comments-hr {
+    margin-top: 5px;
+    border: none;
+    height: 1px;
+    background-color: #a3a3a3;
+}
+
+.comments-authorid {
+    color: var(--text-h);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.comments-content {
+    color: var(--text-h);
+}
+
+.comments-footer form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background-color: var(--element-bg);
+    border-radius: 8px;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.comments-footer form input[name="content"] {
+    width: 80%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-h);
+    background-color: var(--hover-bg, #2a2a2a);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.comments-footer form input[name="content"]:focus {
+    border-color: var(--accent-color, #3b82f6);
+}
+
+.comments-footer form button[type="submit"]:hover {
+    opacity: 0.9;
+}

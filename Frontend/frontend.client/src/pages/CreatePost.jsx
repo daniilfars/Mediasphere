@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postAPI } from "../api/postAPI";
 import { useForm } from "react-hook-form";
-//import "./EditPost.css";
 
 export default function CreatePost() {
     const { register, handleSubmit, reset, formState } = useForm();
