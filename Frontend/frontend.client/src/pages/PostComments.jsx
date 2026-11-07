@@ -15,7 +15,7 @@ export default function PostComments() {
   const { isAuthenticated, user, login } = useAuth();
 
   const [activeMenuCommentId, setActiveMenuCommentId] = useState(null);
-  const menuRef = useRef(null);
+  const menuRefs = useRef({});
 
   const date = new Date(post.createdAt);
 
@@ -28,6 +28,9 @@ export default function PostComments() {
   const sentinelRef = useRef(null);
 
   const { register, handleSubmit, reset } = useForm();
+
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editValue, setEditValue] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -122,9 +125,12 @@ export default function PostComments() {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      const clickedInsideAnyMenu = Object.values(menuRefs.current).some(
+        (ref) => ref && ref.contains(event.target)
+      );
+      
+      if (!clickedInsideAnyMenu)
         setActiveMenuCommentId(null);
-      }
     }
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -146,6 +152,28 @@ export default function PostComments() {
       setActiveMenuCommentId(null);
     }
   };
+
+  const handleEditClick = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditValue(comment.content);
+    setActiveMenuCommentId(null);
+  }
+   
+  const handleEditSave = async (commentId) => {
+    try {
+      await commentAPI.update(commentId, editValue);
+      setComments(prevComments => prevComments.map(c => c.id === commentId ? {...c, content: editValue} : c));
+      setEditingCommentId(null);
+      setEditValue(null);
+    } catch {
+      alert("Не удалось обновить комментарий");
+    }
+  }
+  
+  const handleEditCancel = () => {
+    setEditingCommentId(null);
+    setEditValue(null);
+  }
 
   return (
   <div className="container feed">
@@ -170,7 +198,7 @@ export default function PostComments() {
               <div className="comment-container">
                 <Link to={`/profile/${comment.authorId}`} className="comments-authorid">{comment.userName}</Link>
                 {isAuthenticated && user?.sub === comment.authorId && (
-                <div className="post-card-meatball-container" ref={menuRef}>
+                <div className="post-card-meatball-container" ref={el => menuRefs.current[comment.id] = el}>
                   <button className="post-card-meatball-trigger" onClick={() => toogleMenu(comment.id)} type="button" aria-label="Открыть меню действий" >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
                   </button>
@@ -180,19 +208,32 @@ export default function PostComments() {
                       <button className="post-card-dropdown-btn post-card-delete-btn" onClick={() => handleDeleteClick(comment.id)} type="button" >
                         Удалить
                       </button>
-                      {/*<Link className="post-card-dropdown-btn" to={`/post/${post.id}/edit`} state={{post}}>Редактировать</Link>*/}
+                      <button className="post-card-dropdown-btn" onClick={() => handleEditClick(comment)} type="button" >
+                        Редактировать
+                      </button>
                     </div>
                   )}
                 </div>
                 )}
               </div>
-              <p className="comments-content">{comment.content}</p>
-              <button onClick={() => handleButtonLike(comment.id, comment.isLiked)} className={`post-card-btn ${comment.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
-                <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-                <span>{comment.likes}</span>
-              </button>
+              {editingCommentId === comment.id ?
+                <div className="comment-edit-container">
+                  <input value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus/>
+                  <div className="comment-edit-actions">
+                    <button className="comment-edit-button" onClick={() => handleEditSave(comment.id)} disabled={!editValue} type="button">Сохранить</button>
+                    <button className="comment-cancel-button" onClick={handleEditCancel} type="button">Отменить</button>
+                  </div>
+                </div> : 
+                (<>
+                <p className="comments-content">{comment.content}</p>
+                <button onClick={() => handleButtonLike(comment.id, comment.isLiked)} className={`post-card-btn ${comment.isLiked ? 'is-liked' : ''}`} type="button" aria-label="Поставить лайк">
+                  <svg className="post-card-like-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                  <span>{comment.likes}</span>
+                </button>
+                </>)
+              }
             </li>
           ))}
         </ul>

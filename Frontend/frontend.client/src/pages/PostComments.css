@@ -59,6 +59,28 @@
     margin-bottom: 5px;
 }
 
+.comment-edit-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.comment-edit-actions button {
+    align-self: flex-end;
+    padding: 5px 10px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 6px;
+    background-color: #4a6b8c;
+    color: #fff;
+    transition: opacity 0.15s;
+}
+
+.comment-edit-button:disabled {
+    cursor: not-allowed;
+}
+
 .comments-footer form {
     display: flex;
     flex-direction: row;
@@ -69,7 +91,7 @@
     margin-bottom: 20px;
 }
 
-.comments-footer form input[name="content"] {
+.comments-footer form input[name="content"], .comment-edit-container input {
     width: 80%;
     box-sizing: border-box;
     padding: 10px 12px;
@@ -83,10 +105,16 @@
     transition: border-color 0.15s;
 }
 
-.comments-footer form input[name="content"]:focus {
+.comments-footer form input[name="content"]:focus, .comment-edit-container input:focus {
     border-color: var(--accent-color, #3b82f6);
 }
 
-.comments-footer form button[type="submit"]:hover {
+.comments-footer form button[type="submit"]:hover, .comment-edit-container input:hover:not(:disabled) {
     opacity: 0.9;
+}
+
+@media screen and (max-width: 645px) {
+    .feed {
+        width: 90%;
+    }
 }
