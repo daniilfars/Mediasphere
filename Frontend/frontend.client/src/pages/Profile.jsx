@@ -80,8 +80,8 @@ export default function Profile() {
       try {
         const data = await postAPI.getByAuthorId(id, page, pageSize);
         if (cancelled) return;
-        setPosts(prev => page === 1 ? data.posts : [...prev, ...data.posts]);
-        setHasMore(data.posts.length === pageSize);
+        setPosts(prev => page === 1 ? data?.posts : [...prev, ...data.posts]);
+        setHasMore(data?.posts.length === pageSize);
       } catch (err) {
         if (cancelled) return;
         setError(err.message || 'Ошибка загрузки');
@@ -224,7 +224,7 @@ export default function Profile() {
         }
         
         <ul className="feed">
-          {posts.map(post => (
+          {posts && posts.map(post => (
             <li key={post.id} className="feed-item">
               <PostCard 
                 post={post} 
@@ -238,10 +238,7 @@ export default function Profile() {
         <div ref={sentinelRef} className="feed-sentinel" />
           {isLoading && <div className="feed-loading">Загрузка...</div>}
           {error && <div className="feed-error">Ошибка: {error}</div>}
-          {!hasMore && posts.length > 0 && (
-              <div className="feed-end">Постов больше нет</div>
-          )}
-          {!isLoading && posts.length === 0 && (
+          {!isLoading && !posts && (
           <div className="feed-empty">У пользователя пока нет публикаций</div>
           )}
       </main>
