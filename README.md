@@ -1,10 +1,10 @@
 # Mediasphere - социальная сеть
 
-Микросервисная архитектура на ASP.NET Core с фронтендом на React. 5 независимых сервисов, API Gateway, своя БД у каждого, изображения в MinIO, взаимодействие между микросервисами через MassTransit и gRPC.
+Микросервисная архитектура на ASP.NET Core с фронтендом на React. 5 независимых сервисов, API Gateway, своя БД у каждого, аутентификация и авторизация с помощью Keycloak, изображения в MinIO, взаимодействие между микросервисами через MassTransit и gRPC.
 
 ## Стек
 
-**Backend:** C# 14, ASP.NET Core 10, Entity Framework Core, MediatR, JWT, YARP, MassTransit
+**Backend:** C# 14, ASP.NET Core 10, Entity Framework Core, MediatR, JWT, YARP, MassTransit, Keycloak
 **Database:** PostgreSQL 
 **Storage:** MinIO
 **Frontend:** React  
@@ -57,17 +57,20 @@ MINIO_ROOT_PASSWORD=your-minioadmin-password
 docker compose up
 ```
 
-4. Запустить фронтенд локально:
+4. Вставить настройки Keycloak:
+   http://localhost:8080/ -> Вход через админа(по умолчанию admin/admin) -> Create realm -> Browse и выбрать файл keycloak-settings.json из корня проекта
+
+5. Запустить фронтенд локально:
 
 ```bash
 cd Frontend/frontend.client
 npm install
-npm run dev
+npm run dev -- --port 63250
 ```
 
-5. Открыть в браузере:
+6. Открыть в браузере:
 
-- Frontend: `http://localhost:5173` (Vite выведет актуальный порт в консоли при запуске)
+- Frontend: `http://localhost:63250`
 - Swagger Post: `http://localhost:8081/swagger`
 - Swagger User: `http://localhost:8082/swagger`
 - Swagger Follow: `http://localhost:8083/swagger`
