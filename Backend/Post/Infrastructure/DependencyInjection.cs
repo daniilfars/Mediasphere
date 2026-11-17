@@ -63,7 +63,7 @@ public static class DependencyInjection
                 .WithCredentials(accessKey, secretKey)
                 .Build());
 
-        services.AddScoped<IImageStorageService>(sp =>
+        services.AddSingleton<IImageStorageService>(sp =>
             new ImageStorageService(sp.GetRequiredService<IMinioClient>(), bucketName));
 
         return services;
