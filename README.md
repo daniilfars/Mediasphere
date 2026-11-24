@@ -7,7 +7,8 @@
 **Backend:** C# 14, ASP.NET Core 10, Entity Framework Core, MediatR, JWT, YARP, MassTransit, Keycloak
 **Database:** PostgreSQL 
 **Storage:** MinIO
-**Frontend:** React  
+**Frontend:** React
+**Observability:** Serilog, Seq, OpenTelemetry (распределённая трассировка)
 **DevOps:** Docker Compose  
 
 ## Архитектура
@@ -49,6 +50,9 @@ git clone https://github.com/daniilfars/Mediasphere
 POSTGRES_PASSWORD=your-password
 MINIO_ROOT_USER=your-minioadmin
 MINIO_ROOT_PASSWORD=your-minioadmin-password
+SEQ_ADMIN_PASSWORD=your-seq-password
+SEQ_API_KEY=
+OTEL_SAMPLING_RATIO=1.0
 ```
 
 3. Запустить все микросервисы:
@@ -76,6 +80,7 @@ npm run dev -- --port 63250
 - Swagger Follow: `http://localhost:8083/swagger`
 - Swagger Like: `http://localhost:8084/swagger`
 - Swagger Comment: `http://localhost:8085/swagger`
+- Seq (логи и трассировки): `http://localhost:5341`
 
 ## Сервисы
 
@@ -87,3 +92,10 @@ npm run dev -- --port 63250
 | Follow | 8083 |
 | Like | 8084 |
 | Comment | 8085 |
+
+## Логирование и трассировка
+
+Все сервисы и Gateway пишут структурированные логи через **Serilog** в **Seq**,
+а распределённые трассировки собираются через **OpenTelemetry**.
+Контекст трассировки передаётся через HTTP, gRPC и RabbitMQ/MassTransit,
+поэтому весь путь запроса можно увидеть по одному `TraceId`.
