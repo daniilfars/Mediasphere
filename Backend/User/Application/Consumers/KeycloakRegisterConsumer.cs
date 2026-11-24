@@ -17,8 +17,6 @@ public class KeycloakRegisterConsumer : IConsumer<KeycloakRegister>
 
     public async Task Consume(ConsumeContext<KeycloakRegister> context)
     {
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(context.Message));
-
         context.Message.Details.TryGetValue("username", out var userName);
         Guid id = context.Message.UserId;
 
