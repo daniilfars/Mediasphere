@@ -43,7 +43,7 @@ Frontend/frontend.client
 git clone https://github.com/daniilfars/Mediasphere
 ```
 
-2. Создать файл `.env` около docker-compose.yml:
+2. Переименовать файл `.env.example` в `.env` и заменить на свои данные:
 
 ```env
 POSTGRES_PASSWORD=your-password
