@@ -4,12 +4,12 @@
 
 ## Стек
 
-**Backend:** C# 14, ASP.NET Core 10, Entity Framework Core, MediatR, JWT, YARP, MassTransit, Keycloak
-**Database:** PostgreSQL 
-**Storage:** MinIO
-**Frontend:** React
-**Observability:** Serilog, Seq, OpenTelemetry (распределённая трассировка)
-**DevOps:** Docker Compose  
+- **Backend:** C# 14, ASP.NET Core 10, Entity Framework Core, MediatR, JWT, YARP, MassTransit, Keycloak
+- **Database:** PostgreSQL
+- **Storage:** MinIO
+- **Frontend:** React
+- **Observability:** Serilog, Seq, OpenTelemetry (распределённая трассировка)
+- **DevOps:** Docker Compose
 
 ## Архитектура
 
