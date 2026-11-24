@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Minio;
 using MassTransit;
 using Application.Consumers;
+using Shared.Observability;
 
 namespace Infrastructure;
 
@@ -34,6 +35,7 @@ public static class DependencyInjection
 
             x.UsingRabbitMq((context, cfg) =>
             {
+                cfg.UseConsumeFilter(typeof(MassTransitConsumeLoggingFilter<>), context);
                 cfg.Host(configuration["RabbitMQ:Host"] ?? "rabbitmq", "/", h =>
                 {
                     h.Username(configuration["RabbitMQ:Username"] ?? "guest");

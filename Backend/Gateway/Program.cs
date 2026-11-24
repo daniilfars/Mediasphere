@@ -1,8 +1,10 @@
 using Gateway.Models;
 using LikeGrpc;
 using Shared.Extensions;
+using Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddObservability("gateway");
 
 builder.Services.AddAppSecurity();
 
@@ -27,6 +29,8 @@ builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSecti
 
 var app = builder.Build();
 
+app.UseTraceIdHeader();
+app.UseExternalCorrelationScope();
 app.UseCors("Frontend");
 
 app.UseAuthentication();

@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Observability;
 
 namespace Infrastructure;
 
@@ -32,6 +33,7 @@ public static class DependencyInjection
 
             x.UsingRabbitMq((context, cfg) =>
             {
+                cfg.UseConsumeFilter(typeof(MassTransitConsumeLoggingFilter<>), context);
                 cfg.Host(configuration["RabbitMQ:Host"] ?? "rabbitmq", "/", h =>
                 {
                     h.Username(configuration["RabbitMQ:Username"] ?? "guest");

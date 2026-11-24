@@ -3,8 +3,10 @@ using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Shared.Extensions;
+using Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddObservability("like-api");
 
 builder.Services.AddLikeInfrastructure(builder.Configuration);
 
@@ -21,6 +23,7 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
+app.UseTraceIdHeader();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

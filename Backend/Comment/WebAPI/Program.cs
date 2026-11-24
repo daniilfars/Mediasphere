@@ -2,8 +2,10 @@ using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Shared.Extensions;
+using Shared.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddObservability("comment-api");
 
 builder.Services.AddCommentInfrastructure(builder.Configuration);
 
@@ -18,6 +20,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseTraceIdHeader();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

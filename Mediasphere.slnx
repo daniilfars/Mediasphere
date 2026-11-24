@@ -35,6 +35,7 @@
   </Folder>
   <Folder Name="/Элементы решения/">
     <File Path=".env" />
+    <File Path=".env.example" />
     <File Path="docker-compose.yml" />
   </Folder>
   <Folder Name="/Элементы решения/keycloak-providers/">
